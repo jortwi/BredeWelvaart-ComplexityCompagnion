@@ -82,7 +82,7 @@ unsigned long pauseStartB = 0;
 
 // --- delay on OOCSI check --- //
 unsigned long lastLoopTime = 0;
-const unsigned long loopInterval = 100; // Same timing, but non-blocking
+const unsigned long loopInterval = 50; // Same timing, but non-blocking
 
 // --- Rotary Encoder Interrupt --- //
 void IRAM_ATTR handleEncoderInterrupt()
@@ -102,6 +102,9 @@ void setup()
 {
     Serial.begin(9600);
     Serial.println("Serial started");
+
+    // set a random seed
+    randomSeed(millis());
 
     setupWifi();
     setupOOCSI();
@@ -217,8 +220,7 @@ void loop()
         oocsi.addInt("rotenc_sw", stateROTENC_SW);
         oocsi.sendMessage();
 
-        // --- Check OOCSI incoming messages --- //
-        oocsi.check();
+        
         lastLoopTime = millis(); // Reset timing
     }
 
@@ -337,12 +339,20 @@ void loop()
     display.print(visibleB);
 
     display.display();
+    // Serial.print(oled_sel);
+
+    // --- Check OOCSI incoming messages --- //
+        oocsi.check();
 }
 
 void setupOOCSI()
 {
+    // Add suffix to standard name to prevent "device already connected" OOCSI issues
+    String deviceBaseName = "Wemos-CC-01";
+    String deviceName = deviceBaseName + "-" + String(random(1000, 9999));
     // Connect to OOCSI server
-    oocsi.connect("Wemos-CC-01", "oocsi.id.tue.nl", ssid, password, processOOCSI);
+    oocsi.connect(deviceName.c_str(), "oocsi.id.tue.nl", ssid, password, processOOCSI);
+
     // Name of this oocsi sender/receiver (anything), name of oocsi server, wifi name, wifi password, name of the function thas processes any received messages
 
     oocsi.subscribe(OOCSIChannelName);

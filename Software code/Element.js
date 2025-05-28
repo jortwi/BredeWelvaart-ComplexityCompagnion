@@ -1,5 +1,5 @@
 class Element {
-  constructor(x, y, r, increment, c1, c2) {
+  constructor(x, y, r, increment, c1, c2, name) {
     this.x = x;
     this.y = y;
     this.r = r;
@@ -8,6 +8,7 @@ class Element {
     this.c1 = c1; //inner color
     this.c2 = c2; //outer color
     this.rings = 5; //ringNumber
+    this.name = name;
   }
 
   display() {
