@@ -1,0 +1,56 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- p5 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <!-- AI Foundry Library -->
+    <script src="https://data.id.tue.nl/assets/javascripts/local-ai/latest/local-ai.min.js"></script>
+    <!-- PicoCSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <!-- Marked -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- OOCSI -->
+    <script src="./oocsi-web.min.js"></script>
+    <!-- Main P5 Sketch -->
+    <script src="sketch.js"></script>
+
+    <!-- JS files -->
+    <script src="Element.js"></script>
+    <script src="Relation.js"></script>
+</head>
+
+<body>
+    <div id="canvas">
+        <!-- P5 Canvas will appear here -->
+    </div>
+
+    <script>
+        const cnv = document.getElementById("canvas");
+
+        // On pressing ENTER call toggleFullScreen method
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                toggleFullScreen(cnv);
+            }
+        });
+
+        function toggleFullScreen(video) {
+            if (!document.fullscreenElement) {
+                // If the document is not in full screen mode
+                // make the video full screen
+                video.requestFullscreen();
+                resizeCanvas(windowWidth, windowHeight);
+            } else {
+                // Otherwise exit the full screen
+                document.exitFullscreen?.();
+                resizeCanvas(100, 100); //not working
+            }
+        }
+    </script>
+</body>
+
+</html>
