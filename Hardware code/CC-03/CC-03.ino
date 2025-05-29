@@ -34,8 +34,8 @@ int stateD5 = 0;
 
 // --- OOCSI --- //
 // Wifi credentials
-const char *ssid = "Pixel_9941";           // wifi name
-const char *password = "ayowififohfree??"; // wifi password
+const char *ssid = "";     // wifi name
+const char *password = ""; // wifi password
 // start oocsi
 OOCSI oocsi = OOCSI();
 const char *OOCSIChannelName = "CC-03"; // OOCSI channel name
@@ -137,7 +137,7 @@ void loop()
 
         oocsi.sendMessage();
 
-                lastLoopTime = millis(); // Reset timing
+        lastLoopTime = millis(); // Reset timing
     }
 
     // Read all states
