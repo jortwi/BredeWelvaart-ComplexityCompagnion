@@ -10,8 +10,8 @@ class Relation {
   }
 
   display() {
-    if (this.type === "neutral") {
-      this.neutral();
+    if (this.type === "undefined") {
+      this.undefined();
     } else if (this.type === "amplifying") {
       this.amplifying();
     } else if (this.type === "balancing") {
@@ -34,7 +34,7 @@ class Relation {
   }
 
   //make this organic also
-  neutral() {
+  undefined() {
     const x1 = this.e1.x;
     const y1 = this.e1.y;
     const r1 = this.e1.r === undefined ? 10 : this.e1.r;

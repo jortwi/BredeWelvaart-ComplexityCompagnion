@@ -28,6 +28,9 @@ class Element {
         // strokeColor: color("black"),
       });
     }
+
+    fill("black");
+    text(this.name, this.x, this.y + this.r * 2 + 20);
   }
 
   update() {

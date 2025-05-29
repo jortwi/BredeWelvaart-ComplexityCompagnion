@@ -4,7 +4,7 @@ const RAW_POT_MAX = 7200;
 // --- Data Storage --- //
 //The values starting with _0 are directly from OOCSI. Other values are processed
 let sensorData = {
-  //unprocessed sensor data
+  // --- Unprocessed Sensor Data --- //
   //CC-01
   _01_refl_inn: 0,
   _01_refl_thi: 0,
@@ -13,11 +13,18 @@ let sensorData = {
   _01_add: 0,
   _01_rem: 0,
   _01_sel: 0,
+
   //CC-02
+  _02_refl_fut: 0,
+  _02_refl_eff: 0,
+  _02_type: 0,
+  _02_neg_pos: 0,
+  _02_weak_str: 0,
+  _02_set: 0,
   //CC-03
   //CC-04
 
-  //processed sensor data
+  // --- Processed Sensor Data --- //
   //CC-01
   reflecting_innovation: 0,
   reflecting_interdisciplinary_thinking: 0,
@@ -26,18 +33,29 @@ let sensorData = {
   button_add: 0,
   button_remove: 0,
   encoder_select: 0,
+
   //CC-02
+  reflecting_futures: 0,
+  reflecting_effects_elsewhere: 0,
+  encoder_weak_strong: 0,
+  encoder_negative_positive: 0,
+  knob_type: 0,
+  button_set: 0,
   //CC-03
   //CC-04
 
-  //previous states
+  // --- Previous States --- //
   //CC-01
   prev_button_a: 0,
   prev_button_b: 0,
   prev_button_add: 0,
   prev_button_remove: 0,
   prev_encoder_select: 0,
+
   //CC-02
+  prev_encoder_weak_strong: 0,
+  prev_encoder_negative_positive: 0,
+  prev_button_set: 0,
   //CC-03
   //CC-04
 };
@@ -51,6 +69,15 @@ OOCSI.subscribe("CC-01", function (msg) {
   retrieveButton("01_add", "button_add", msg);
   retrieveButton("01_rem", "button_remove", msg);
   retrieveEncoder("01_sel", "encoder_select", msg);
+});
+
+OOCSI.subscribe("CC-02", function (msg) {
+  retrievePotmeter("02_refl_fut", "reflecting_futures", msg);
+  retrievePotmeter("02_refl_eff", "reflecting_effects_elsewhere", msg);
+  retrievePotmeter("02_type", "knob_type", msg);
+  retrieveEncoder("02_neg_pos", "encoder_negative_positive", msg);
+  retrieveEncoder("02_weak_str", "encoder_weak_strong", msg);
+  retrieveButton("02_set", "button_set", msg);
 });
 
 function retrievePotmeter(oocsiName, jsName, msg) {
@@ -77,9 +104,16 @@ function processPotentiometer(rawValue, maxRaw) {
 }
 
 function updatePreviousButtonStates() {
+  //CC-01
   sensorData.prev_button_a = sensorData.button_a;
   sensorData.prev_button_b = sensorData.button_b;
   sensorData.prev_button_add = sensorData.button_add;
   sensorData.prev_button_remove = sensorData.button_remove;
   sensorData.prev_encoder_select = sensorData.encoder_select;
+
+  //CC-02
+  sensorData.prev_button_set = sensorData.button_set;
+  sensorData.prev_encoder_negative_positive =
+    sensorData.encoder_negative_positive;
+  sensorData.prev_encoder_weak_strong = sensorData.encoder_weak_strong;
 }
