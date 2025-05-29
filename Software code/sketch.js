@@ -3,6 +3,17 @@ let relations = [];
 let selectedA = 0;
 let selectedB = 1;
 let selectedAorB = "A";
+let aiMode = "undefined";
+let aiModes = [
+  "undefined",
+  "criticism",
+  "suggestion",
+  "reflection",
+  "clarification",
+  "conclusion",
+];
+let = ai_message = "no message";
+let ai_thinking = "false";
 
 function preload() {
   //
@@ -120,18 +131,39 @@ function sendOOCSI() {
     "02_type_und",
     "02_type_nor",
   ];
-  const payload = {};
+  const payloadCC02 = {};
 
   // Set true for the selected type, false for all others
   for (const type of allTypes) {
-    payload[type] = type === oocsiTypeString ? "true" : "false";
+    payloadCC02[type] = type === oocsiTypeString ? "true" : "false";
   }
 
   OOCSI.send("CC-02", {
-    ...payload,
+    ...payloadCC02,
   });
-  OOCSI.send("CC-03", {});
-  OOCSI.send("CC-04", {});
+
+  OOCSI.send("CC-03", {
+    //nothing is sent to CC-03
+  });
+
+  const oocsiModeString = getOocsiModeString();
+  const allModes = [
+    "04_mode_und",
+    "04_mode_crit",
+    "04_mode_sugg",
+    "04_mode_refl",
+    "04_mode_clar",
+    "04_mode_concl",
+  ];
+  const payloadCC04 = {};
+  for (const mode of allModes) {
+    payloadCC04[mode] = mode === oocsiModeString ? "true" : "false";
+  }
+  OOCSI.send("CC-04", {
+    ...payloadCC04,
+    "04_oled_msg": ai_message,
+    "04_think": ai_thinking,
+  });
 }
 
 async function handleInputs() {
@@ -206,11 +238,84 @@ async function handleInputs() {
       sensorData.encoder_negative_positive;
     selectedRelation.positivity -= difference;
   }
-  //here
   if (sensorData.encoder_weak_strong !== sensorData.prev_encoder_weak_strong) {
     let difference =
       sensorData.prev_encoder_weak_strong - sensorData.encoder_weak_strong;
     selectedRelation.strength -= difference;
+  }
+
+  // --- CC-03 --- //
+  //Move UP
+  if (sensorData.button_up) {
+    //the user may hold the button or press it just once, so no check if previous state was 0
+    if (selectedAorB === "A") {
+      elements[
+        ((selectedA % elements.length) + elements.length) % elements.length
+      ].y -= 3;
+    } else {
+      elements[
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ].y -= 3;
+    }
+  }
+  //Move RIGHT
+  if (sensorData.button_right) {
+    //the user may hold the button or press it just once, so no check if previous state was 0
+    if (selectedAorB === "A") {
+      elements[
+        ((selectedA % elements.length) + elements.length) % elements.length
+      ].x += 3;
+    } else {
+      elements[
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ].x += 3;
+    }
+  }
+  //Move DOWN
+  if (sensorData.button_down) {
+    //the user may hold the button or press it just once, so no check if previous state was 0
+    if (selectedAorB === "A") {
+      elements[
+        ((selectedA % elements.length) + elements.length) % elements.length
+      ].y += 3;
+    } else {
+      elements[
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ].y += 3;
+    }
+  }
+  //Move LEFT
+  if (sensorData.button_left) {
+    //the user may hold the button or press it just once, so no check if previous state was 0
+    if (selectedAorB === "A") {
+      elements[
+        ((selectedA % elements.length) + elements.length) % elements.length
+      ].x -= 3;
+    } else {
+      elements[
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ].x -= 3;
+    }
+  }
+  if (sensorData.encoder_size !== sensorData.prev_encoder_size) {
+    let difference = sensorData.prev_encoder_size - sensorData.encoder_size;
+    if (selectedAorB === "A") {
+      elements[
+        ((selectedA % elements.length) + elements.length) % elements.length
+      ].r -= difference;
+    } else {
+      elements[
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ].r -= difference;
+    }
+  }
+
+  // --- CC-04 --- //
+  aiMode = calculateMode();
+  if (sensorData.button_next && !sensorData.prev_button_next) {
+    ai_thinking = "true";
+    ai_message = await getAiMessage();
+    ai_thinking = "false";
   }
 }
 
@@ -309,4 +414,48 @@ function getOocsiTypeString() {
     default:
       return "02_type_nor";
   }
+}
+
+function getOocsiModeString() {
+  switch (aiMode) {
+    case "undefined":
+      return "04_mode_und";
+    case "criticism":
+      return "04_mode_crit";
+    case "suggestion":
+      return "04_mode_sugg";
+    case "reflection":
+      return "04_mode_refl";
+    case "clarification":
+      return "04_mode_clar";
+    case "conclusion":
+      return "04_mode_concl";
+  }
+}
+
+//retrieve the mode for AI based on what the knob_mode is currently set to
+function calculateMode() {
+  const modes = [
+    "conclusion",
+    "clarification",
+    "reflection",
+    "suggestion",
+    "criticism",
+    "undefined",
+  ];
+
+  const value = sensorData.knob_mode;
+
+  if (typeof value !== "number" || value < 0 || value > 1) {
+    console.error(
+      "knob_mode is not a number or not 0-1:",
+      JSON.stringify(sensorData.knob_mode)
+    );
+    return null;
+  }
+
+  // Multiply by number of segments and floor it, then clamp
+  const index = Math.min(Math.floor(value * modes.length), modes.length - 1);
+
+  return modes[index];
 }
