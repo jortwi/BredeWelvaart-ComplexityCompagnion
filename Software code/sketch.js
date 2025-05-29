@@ -204,14 +204,13 @@ async function handleInputs() {
     let difference =
       sensorData.prev_encoder_negative_positive -
       sensorData.encoder_negative_positive;
-    selectedRelation.positivity += difference;
+    selectedRelation.positivity -= difference;
   }
   //here
   if (sensorData.encoder_weak_strong !== sensorData.prev_encoder_weak_strong) {
     let difference =
-      sensorData.prev_encoder_negative_positive -
-      sensorData.encoder_negative_positive;
-    selectedRelation.positivity += difference;
+      sensorData.prev_encoder_weak_strong - sensorData.encoder_weak_strong;
+    selectedRelation.strength -= difference;
   }
 }
 

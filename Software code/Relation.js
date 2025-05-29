@@ -7,6 +7,8 @@ class Relation {
     this.c1 = this.e1.c1;
     this.c2 = this.e2.c1;
     this.weight = 5;
+    this.strength = 50;
+    this.positivity = 50;
   }
 
   display() {
