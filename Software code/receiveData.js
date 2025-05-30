@@ -121,8 +121,8 @@ OOCSI.subscribe("CC-02", function (msg) {
 OOCSI.subscribe("CC-03", function (msg) {
   retrievePotmeter("03_refl_soc", "reflecting_quality_of_society", msg);
   retrievePotmeter("03_refl_life", "reflecting_quality_of_life", msg);
-  retrievePotmeter("03_unc", "knob_uncertainty", msg);
-  retrieveEncoder("03_vit", "knob_vitality", msg);
+  retrievePotmeter("03_unce", "knob_uncertainty", msg);
+  retrievePotmeter("03_vit", "knob_vitality", msg);
   retrieveEncoder("03_size", "encoder_size", msg);
   retrieveButton("03_up", "button_up", msg);
   retrieveButton("03_right", "button_right", msg);
@@ -157,7 +157,7 @@ function retrieveEncoder(oocsiName, jsName, msg) {
 
 // Map raw 0-max potentiometer value to 0-1
 function processPotentiometer(rawValue, maxRaw) {
-  return constrain(map(rawValue, 0, maxRaw, 0, 1), 0, 1);
+  return constrain(map(rawValue, 0, maxRaw, 1, 0), 0, 1);
 }
 
 function updatePreviousButtonStates() {

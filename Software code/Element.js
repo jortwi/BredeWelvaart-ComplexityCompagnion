@@ -1,20 +1,23 @@
 class Element {
-  constructor({ x, y, r, increment, c1, c2, name }) {
+  constructor({ x, y, r, increment, c1, c2, name, type }) {
     this.x = x;
     this.y = y;
     this.r = r;
-    this.time = 0;
+    this.time = random(1000);
     this.increment = increment; //more will let the element to change more
     this.c1 = c1; //inner color
     this.c2 = c2; //outer color
     this.rings = 5; //ringNumber
     this.name = name;
+    this.type = type ? type : "regular";
+    this.lastClosestElement = "this is only used for white spots";
+    this.xSpeed = 0;
+    this.ySpeed = 0;
   }
 
   display() {
-    let clr = color("white");
     for (let i = 0; i < this.rings; i++) {
-      clr = lerpColor(this.c1, this.c2, i / this.rings);
+      let clr = lerpColor(this.c1, this.c2, i / this.rings);
 
       this.drawOrganicShape({
         x: this.x,
@@ -34,7 +37,40 @@ class Element {
   }
 
   update() {
+    this.increment = 0.0005 + 0.004 * sensorData.knob_vitality; //vitality directly influences all elements (there is always some element change)
     this.time += this.increment;
+    this.x += this.xSpeed;
+    this.y += this.ySpeed;
+
+    //if the element is a white spot, change do not let it move outside the canvas
+    if (this.type !== "regular") {
+      if (this.x > width - width / 10) {
+        this.xSpeed = -1 * sensorData.knob_vitality;
+      }
+      if (this.x < 0 + width / 10) {
+        this.xSpeed = 1 * sensorData.knob_vitality;
+      }
+      if (this.y > height - height / 10) {
+        this.ySpeed = -1 * sensorData.knob_vitality;
+      }
+      if (this.y < 0 + height / 10) {
+        this.ySpeed = 1 * sensorData.knob_vitality;
+      }
+    } else {
+      //regular elements may also temporarily move due to vitality, in that case, just don't let it move outside of the frame
+      if (this.x > width - width / 10) {
+        this.x = width - width / 10;
+      }
+      if (this.x < 0 + width / 10) {
+        this.x = width / 10;
+      }
+      if (this.y > height - height / 10) {
+        this.y = height - height / 10;
+      }
+      if (this.y < 0 + height / 10) {
+        this.y = height / 10;
+      }
+    }
   }
 
   drawOrganicShape({

@@ -63,6 +63,12 @@ function draw() {
     elements[i].update();
   }
 
+  //display white spot
+  for (let i = 0; i < whiteSpots.length; i++) {
+    whiteSpots[i].display();
+    whiteSpots[i].update();
+  }
+
   handleInputs();
 
   updatePreviousButtonStates();
@@ -295,7 +301,9 @@ async function handleInputs() {
 function addElement(newElement) {
   // Create relations with all existing elements
   for (const existingElement of elements) {
-    relations.push(new Relation(existingElement, newElement, "amplifying"));
+    relations.push(
+      new Relation(existingElement, newElement, getRandomRelationType())
+    );
   }
 
   // Add the new element to the elements array
@@ -343,7 +351,7 @@ function calculateType() {
     "delay",
   ];
 
-  const value = sensorData.knob_type;
+  const value = 1 - sensorData.knob_type;
 
   if (typeof value !== "number" || value < 0 || value > 1) {
     console.error(
@@ -416,7 +424,7 @@ function calculateMode() {
     "undefined",
   ];
 
-  const value = sensorData.knob_mode;
+  const value = 1 - sensorData.knob_mode;
 
   if (typeof value !== "number" || value < 0 || value > 1) {
     console.error(
@@ -430,4 +438,17 @@ function calculateMode() {
   const index = Math.min(Math.floor(value * modes.length), modes.length - 1);
 
   return modes[index];
+}
+
+function getRandomRelationType() {
+  const types = [
+    "null",
+    "undefined",
+    "balancing",
+    "amplifying",
+    "flow",
+    "resonance",
+    "delay",
+  ];
+  return types[Math.floor(random(types.length))];
 }

@@ -17,12 +17,25 @@ class Relation {
     } else if (this.type === "amplifying") {
       this.amplifying();
     } else if (this.type === "balancing") {
+      this.drawLine();
     } else if (this.type === "flow") {
+      this.drawLine();
     } else if (this.type === "resonance") {
+      this.drawLine();
     } else if (this.type === "delaying") {
+      this.drawLine();
     } else {
       //draw nothing if no relation type was specified -- elements are always related
+      // this.drawLine();
     }
+  }
+
+  drawLine() {
+    push();
+    stroke(127);
+    strokeWeight(2);
+    line(this.e1.x, this.e1.y, this.e2.x, this.e2.y);
+    pop();
   }
 
   // Helper method to calculate a point on a quadratic Bezier curve
