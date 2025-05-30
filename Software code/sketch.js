@@ -17,6 +17,7 @@ let ai_thinking = "false"; //specifies if "thinking" LED should be turned on
 
 function preload() {
   font = loadFont("../assets/SpaceMono-Bold.ttf");
+  backgroundTextureImage = loadImage("/assets/white-rough-texture-pattern.jpg");
 }
 
 function setup() {
@@ -43,6 +44,11 @@ function draw() {
   //color issue: probably an issue with the copying of this.e1.c1. changes to that value pass on. See neutral() function in Relation.js
 
   background("white");
+  tint(255, 50);
+  image(backgroundTextureImage, 0, 0, width, height);
+
+  //add unpredictability to the visual
+  handleRandomness();
 
   //first render relations so they stay behind the elements
 
