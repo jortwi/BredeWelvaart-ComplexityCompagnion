@@ -1,5 +1,5 @@
 class Element {
-  constructor(x, y, r, increment, c1, c2, name) {
+  constructor({ x, y, r, increment, c1, c2, name }) {
     this.x = x;
     this.y = y;
     this.r = r;

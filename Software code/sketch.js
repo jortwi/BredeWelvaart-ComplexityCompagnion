@@ -1,26 +1,26 @@
-let elements = [];
-let relations = [];
-let selectedA = 0;
-let selectedB = 1;
-let selectedAorB = "A";
-let aiMode = "undefined";
-let aiModes = [
-  "undefined",
-  "criticism",
-  "suggestion",
-  "reflection",
-  "clarification",
-  "conclusion",
-];
-let = ai_message = "no message";
-let ai_thinking = "false";
+let elements = []; //array with all elements on screen
+let relations = []; //array with relations between all elements (some are invisible)
+let selectedA = 0; //index for the selected element under selected A, refers to elements[index] array
+let selectedB = 1; //index for the selected element under selected B, refers to elements[index] array
+let selectedAorB = "A"; //"A" or "B", specifies wether the user is changing the selected element A or B
+let aiMode = "undefined"; //current AI mode
+// let aiModes = [          //looks like this is not used
+//   "undefined",
+//   "criticism",
+//   "suggestion",
+//   "reflection",
+//   "clarification",
+//   "conclusion",
+// ];
+let ai_message = "no message"; //current AI message
+let ai_thinking = "false"; //specifies if "thinking" LED should be turned on
 
 function preload() {
-  //
+  font = loadFont("../assets/SpaceMono-Bold.ttf");
 }
 
 function setup() {
-  let canvas = createCanvas(1920, 1080); //not ideal
+  let canvas = createCanvas(1440, 720); //not ideal
   canvas.parent("canvas");
 
   //set cursors start location
@@ -28,46 +28,15 @@ function setup() {
   cursor.y = height / 2;
 
   textAlign(CENTER, CENTER);
-  textSize(12);
+  textFont(font);
+  textSize(17);
   //   noStroke();
 
-  addElement(
-    new Element(
-      width / 2,
-      height / 2,
-      50,
-      0.001,
-      color("red"),
-      color("white"),
-      "Transforming Practices"
-    )
-  );
-  addElement(
-    new Element(
-      width / 3,
-      height / 3,
-      30,
-      0.001,
-      color("navy"),
-      color("#1100FF"),
-      "Algemene Rekenkamer"
-    )
-  );
-  addElement(
-    new Element(
-      1700,
-      800,
-      40,
-      0.001,
-      color("#DDBEA9"),
-      color("#F7DECA"),
-      "Eindhoven"
-    )
-  );
-
-  // r1 = new Relation(elements[0], elements[1], "amplifying");
-  // r2 = new Relation(elements[1], elements[2], "undefined");
-  // r3 = new Relation(elements[2], elements[0], "null"); //no relation
+  //add initial elements to screen (specified in startElements.js, can be adapted by user)
+  let startElements = getStartElements();
+  for (let i = 0; i < startElements.length; i++) {
+    addElement(new Element(startElements[i]));
+  }
 }
 
 function draw() {
@@ -76,9 +45,6 @@ function draw() {
   background("white");
 
   //first render relations so they stay behind the elements
-  // r1.display();
-  // r2.display();
-  // r3.display();
 
   //display relations
   for (let i = 0; i < relations.length; i++) {
@@ -193,15 +159,15 @@ async function handleInputs() {
   if (!sensorData.button_add && sensorData.prev_button_add) {
     let transcription = await audioSwitch.release();
     addElement(
-      new Element(
-        random(1920),
-        random(1080),
-        50,
-        0.001,
-        color("#DDBEA9"),
-        color("#F7DECA"),
-        transcription
-      )
+      new Element({
+        x: random(1920),
+        y: random(1080),
+        r: 50,
+        increment: 0.001,
+        c1: color("#DDBEA9"),
+        c2: color("#F7DECA"),
+        name: transcription,
+      })
     );
   }
 
