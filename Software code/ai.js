@@ -13,7 +13,7 @@ async function getAiMessage() {
     response = await foundry.textToText({
       server,
       api_token,
-      prompt: "please tell me more about broad prosperity. answer VERY shortly",
+      prompt: getAiInput(),
       logging: true,
       model,
       maxTokens: 9999, //not ideal but neither is cut-off messages
@@ -68,10 +68,56 @@ const audioSwitch = {
 
 function getAiInput() {
   let input = {
-    topic: "",
-    behavior: "",
-    prompt: "",
+    prompt: `
+     GIVE A VERY SHORT SUPPORTIVE STATEMENT. MAX 2 SENTENCES!!!! THIS IS EXTREMELY IMPORTANT. 
+     CONSIDER YOUR READER TO BE INTELLIGENT AND KNOWLEDGEABLE.
+     You help the readers to collaborate and discuss a complex topic. Change your reaction according to the specified behavior.
+     Take into account your own behavior, the topic information, the reflections provided by the users, and the situation analysis provided by the user.
+     Help the users by provided missed opportunities or insights, by asking smart questions,
+     by asking them to reflect on certain ideas, or by helping them conclude on their thoughts.
+     In this discussion the users are visualizing how they think the elements in the situation relate to each other, you can help them.
+     YOU DO NOT GIVE ANSWERS, YOU ARE ONLY HERE TO SUPPORT.
+     IGNORE THAT THE REFLECTIONS ARE GIVEN VERY SPECIFICALLY, AND USE THIS INFORMATION AS A SUGGESTION.
+     IGNORE ALL TEXT THAT IS NOT ENGLISH OR DUTCH!!!!!!
+    `,
+    situationAnalysis: `
+      Important elements though of by the users: ${getElements()}.
+      The users rate the uncertainty of their situation on a scale of 0 - 1 a: ${
+        sensorData.knob_uncertainty
+      }.
+      The users rate the vitality of their situation on a scale of 0 - 1 a: ${
+        sensorData.knob_vitality
+      }
+    `,
+    usersReflection: `
+    The users rated their discussion and situational analysis on the following scales from 0 - 1:
+    innovation: ${sensorData.reflecting_innovation},
+    interdisciplinary thinking: ${sensorData.reflecting_interdisciplinary_thinking},
+    futures: ${sensorData.reflecting_futures},
+    effects elsewhere / side-effects: ${sensorData.reflecting_effects_elsewhere},
+    quality of society: ${sensorData.reflecting_quality_of_society},
+    quality of life: ${sensorData.reflecting_quality_of_life},
+    collaboration: ${sensorData.reflecting_collaboration},
+    listening to each other: ${sensorData.reflecting_listening},
+    `,
+    topicInformation: `
+      You currently do not have specific information about the topic, but you do have information that is relevant about broad prosperity:
+      Broad Prosperity is used as a framework for reflecting on the situation. It includes everything that people value in life.
+      Promote thinking in terms of broad prosperity, meaning thinking differently, regular reflection, learning, innovating, considering all perspectives,
+      and especially considering effects elsewhere and effects in the future.
+    `,
+    behavior: `
+      ${aiMode}
+    `,
   };
 
   return JSON.stringify(input);
+}
+
+function getElements() {
+  let elementNames = [];
+  for (let i = 0; i < elements.length; i++) {
+    elementNames.push(elements[i].name);
+  }
+  return elementNames;
 }
