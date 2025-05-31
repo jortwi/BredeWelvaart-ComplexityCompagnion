@@ -65,3 +65,13 @@ const audioSwitch = {
     }
   },
 };
+
+function getAiInput() {
+  let input = {
+    topic: "",
+    behavior: "",
+    prompt: "",
+  };
+
+  return JSON.stringify(input);
+}

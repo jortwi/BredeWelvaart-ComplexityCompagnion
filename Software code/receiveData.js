@@ -132,7 +132,7 @@ OOCSI.subscribe("CC-03", function (msg) {
 
 OOCSI.subscribe("CC-04", function (msg) {
   retrievePotmeter("04_refl_col", "reflecting_collaboration", msg);
-  retrievePotmeter("04_refl_lis", "reflecting_listening", msg);
+  retrievePotmeter("04_refl_list", "reflecting_listening", msg);
   retrievePotmeter("04_mode", "knob_mode", msg);
   retrieveEncoder("04_next", "button_next", msg);
 });

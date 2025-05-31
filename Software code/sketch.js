@@ -75,6 +75,8 @@ function draw() {
 
   sendOOCSI();
 
+  drawProgressBar();
+
   // sensorData.encoder_select;
 }
 
@@ -305,9 +307,7 @@ async function handleInputs() {
 function addElement(newElement) {
   // Create relations with all existing elements
   for (const existingElement of elements) {
-    relations.push(
-      new Relation(existingElement, newElement, getRandomRelationType())
-    );
+    relations.push(new Relation(existingElement, newElement, "null"));
   }
 
   // Add the new element to the elements array

@@ -1,251 +1,7 @@
-// class Relation {
-//   constructor(e1, e2, type) {
-//     this.e1 = e1; //element 1
-//     this.e2 = e2; //element 2
-//     this.type = type;
-//     this.time = 0;
-//     this.c1 = this.e1.c1;
-//     this.c2 = this.e2.c1;
-//     this.weight = 5;
-//     this.strength = 50;
-//     this.positivity = 50;
-//   }
-
-//   display() {
-//     if (this.type === "undefined") {
-//       this.undefined();
-//     } else if (this.type === "amplifying") {
-//       this.amplifying();
-//     } else if (this.type === "balancing") {
-//       this.drawLine();
-//     } else if (this.type === "flow") {
-//       this.drawLine();
-//     } else if (this.type === "resonance") {
-//       this.drawLine();
-//     } else if (this.type === "delaying") {
-//       this.drawLine();
-//     } else {
-//       //draw nothing if no relation type was specified -- elements are always related
-//       // this.drawLine();
-//     }
-//   }
-
-//   drawLine() {
-//     push();
-//     stroke(127);
-//     strokeWeight(this.strength / 15);
-//     line(this.e1.x, this.e1.y, this.e2.x, this.e2.y);
-//     pop();
-//   }
-
-//   // Helper method to calculate a point on a quadratic Bezier curve
-//   _quadraticPoint(p0x, p0y, cpx, cpy, p1x, p1y, t) {
-//     const u = 1 - t;
-//     const tt = t * t;
-//     const uu = u * u;
-//     const x = uu * p0x + 2 * u * t * cpx + tt * p1x;
-//     const y = uu * p0y + 2 * u * t * cpy + tt * p1y;
-//     return { x: x, y: y };
-//   }
-
-//   //make this organic also
-//   undefined() {
-//     const x1 = this.e1.x;
-//     const y1 = this.e1.y;
-//     const r1 = this.e1.r === undefined ? 10 : this.e1.r;
-//     const c1_val = this.e1.c1 || color(150, 150, 150); // Default color if undefined
-
-//     const x2 = this.e2.x;
-//     const y2 = this.e2.y;
-//     const r2 = this.e2.r === undefined ? 10 : this.e2.r;
-//     const c2_val = this.e2.c1 || color(180, 180, 180); // Default color if undefined
-
-//     // Ensure colors are p5.Color objects and set desired alpha
-//     const startColor = color(c1_val);
-//     startColor.setAlpha(100); // Partly transparent
-//     const endColor = color(c2_val);
-//     endColor.setAlpha(100); // Partly transparent
-
-//     const dx = x2 - x1;
-//     const dy = y2 - y1;
-//     const dist = Math.sqrt(dx * dx + dy * dy);
-
-//     if (dist === 0) return;
-
-//     const ux = dx / dist;
-//     const uy = dy / dist;
-//     const px = -uy;
-//     const py = ux;
-
-//     const halfW1 = r1;
-//     const halfW2 = r2;
-
-//     const midWidthFactor = 0.3;
-//     const minHalfMidWidth = 1;
-//     let calculatedHalfMidWidth = ((halfW1 + halfW2) / 2) * midWidthFactor;
-//     const halfMidW = Math.max(minHalfMidWidth, calculatedHalfMidWidth);
-
-//     const p1A = { x: x1 + px * halfW1, y: y1 + py * halfW1 }; // Top-left
-//     const p1B = { x: x1 - px * halfW1, y: y1 - py * halfW1 }; // Bottom-left
-
-//     const p2A = { x: x2 + px * halfW2, y: y2 + py * halfW2 }; // Top-right
-//     const p2B = { x: x2 - px * halfW2, y: y2 - py * halfW2 }; // Bottom-right
-
-//     const midLineX = (x1 + x2) / 2;
-//     const midLineY = (y1 + y2) / 2;
-
-//     const apexTop = {
-//       x: midLineX + px * halfMidW,
-//       y: midLineY + py * halfMidW,
-//     };
-//     const apexBottom = {
-//       x: midLineX - px * halfMidW,
-//       y: midLineY - py * halfMidW,
-//     };
-
-//     // Control points for the Bezier curves
-//     // For curve p1A -> apexTop -> p2A
-//     const cpA = {
-//       x: 2 * apexTop.x - (p1A.x + p2A.x) / 2,
-//       y: 2 * apexTop.y - (p1A.y + p2A.y) / 2,
-//     };
-//     // For curve p1B -> apexBottom -> p2B
-//     const cpB = {
-//       x: 2 * apexBottom.x - (p1B.x + p2B.x) / 2,
-//       y: 2 * apexBottom.y - (p1B.y + p2B.y) / 2,
-//     };
-
-//     const numSegments = 50; // Number of segments to draw for the gradient
-//     noStroke();
-
-//     for (let i = 0; i < numSegments; i++) {
-//       const t0 = i / numSegments;
-//       const t1 = (i + 1) / numSegments;
-
-//       const segColor = lerpColor(startColor, endColor, (t0 + t1) / 2);
-//       fill(segColor);
-
-//       // Points for the current segment quadrilateral
-//       const pt_top_t0 = this._quadraticPoint(
-//         p1A.x,
-//         p1A.y,
-//         cpA.x,
-//         cpA.y,
-//         p2A.x,
-//         p2A.y,
-//         t0
-//       );
-//       const pt_top_t1 = this._quadraticPoint(
-//         p1A.x,
-//         p1A.y,
-//         cpA.x,
-//         cpA.y,
-//         p2A.x,
-//         p2A.y,
-//         t1
-//       );
-//       const pt_bottom_t0 = this._quadraticPoint(
-//         p1B.x,
-//         p1B.y,
-//         cpB.x,
-//         cpB.y,
-//         p2B.x,
-//         p2B.y,
-//         t0
-//       );
-//       const pt_bottom_t1 = this._quadraticPoint(
-//         p1B.x,
-//         p1B.y,
-//         cpB.x,
-//         cpB.y,
-//         p2B.x,
-//         p2B.y,
-//         t1
-//       );
-//       beginShape();
-//       vertex(pt_top_t0.x, pt_top_t0.y);
-//       vertex(pt_top_t1.x, pt_top_t1.y);
-//       vertex(pt_bottom_t1.x, pt_bottom_t1.y);
-//       vertex(pt_bottom_t0.x, pt_bottom_t0.y);
-//       endShape(CLOSE);
-//     }
-//   }
-
-//   amplifying() {
-//     this.soundLine(
-//       this.e1.x,
-//       this.e1.y,
-//       this.e2.x,
-//       this.e2.y,
-//       50,
-//       2,
-//       this.time
-//     );
-//     this.time += 0.01;
-//   }
-
-//   soundLine(x1, y1, x2, y2, amplitude, increment, animationTime) {
-//     let prevX = 0;
-//     let currentX = 0; // Renamed 'x' to 'currentX' to avoid confusion in this scope
-//     let prevY = 0;
-//     let currentY = 0; // Renamed 'y' to 'currentY'
-//     let ampl = 1;
-//     let dist = sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
-
-//     push();
-//     strokeWeight(this.weight);
-//     translate(x1, y1);
-//     let angle = atan2(y2 - y1, x2 - x1);
-//     rotate(angle);
-
-//     // Control how "fast" the noise changes along the line and over time
-//     let noiseScaleSpatial = 0.05; // How much the noise changes per pixel along the line
-//     let noiseScaleTime = 1; // How much the noise changes per frame (animationTime unit)
-
-//     for (let i = 0; i < dist; i += increment) {
-//       currentX += increment;
-//       // Use 2D noise:
-//       // 1st dimension: i * noiseScaleSpatial (position along the line)
-//       // 2nd dimension: animationTime * noiseScaleTime (time)
-//       // Optional: add this.noiseSeedOffset to animationTime if you want unique patterns per relation
-//       // let noiseValue = noise(i * noiseScaleSpatial + this.noiseSeedOffset, animationTime * noiseScaleTime);
-//       let noiseValue = noise(
-//         i * noiseScaleSpatial,
-//         animationTime * noiseScaleTime
-//       );
-//       currentY = ampl * (noiseValue - 0.5); // noise() returns 0-1, so subtract 0.5 for -0.5 to 0.5
-
-//       //test to see if it makes sense to let positivity affect alpha values
-//       let strokeClrTest = lerpColor(this.c1, this.c2, i / dist);
-//       strokeClrTest.setAlpha(12 * this.positivity);
-
-//       stroke(strokeClrTest);
-//       line(prevX, prevY, currentX, currentY);
-//       prevX = currentX;
-//       prevY = currentY;
-
-//       // Amplitude shaping (envelope)
-//       if (i < dist / 6) {
-//         ampl = 0;
-//       } else if (i < dist / 2) {
-//         ampl += (amplitude / (dist / 2 - dist / 6)) * increment; // More robust amplitude increase
-//         ampl = min(ampl, amplitude * 10); // Cap amplitude to prevent it growing too large
-//       } else if (i < (dist * 5) / 6) {
-//         ampl -= (amplitude / ((dist * 5) / 6 - dist / 2)) * increment; // More robust amplitude decrease
-//         ampl = max(ampl, 0); // Ensure amplitude doesn't go negative
-//       } else {
-//         ampl = 0;
-//       }
-//       ampl = constrain(ampl, 0, amplitude * 10); // General constrain
-//     }
-
-//     pop();
-//   }
-// }
-
 ///////////
-//GENERATED BY GOOGLE AI GEMINI 2.5 PREVIEW 05-06
+// THIS CODE FILE WAS FOR >90% GENERATED BY GOOGLE AI GEMINI 2.5 PREVIEW 05-06
 ///////////
+
 class Relation {
   constructor(e1, e2, type) {
     this.e1 = e1;
@@ -264,6 +20,7 @@ class Relation {
     this.undefined_baseThicknessMax = 4;
     this.undefined_endFactor = 1.5;
     this.undefined_radiusInfluence = 0.05;
+    this.undefined_animationSpeed = 0.005; // For particles
 
     // Balancing Relation
     this.balancing_lineBaseThickness = 0.5;
@@ -301,13 +58,128 @@ class Relation {
     this.delaying_arrowStrengthSize = 8;
     this.delaying_animationSpeed = 0.003;
     this.delaying_leaderStartProgress = 0.15;
-    this.delaying_followerRelativeSpeed = 1.1; //1 is same speed, 1.2 is catchin up
-    this.delaying_leaderDecelerationFactor = 3; // 1 for linear, 2 for quad, 3 for cubic ease-out etc.
+    this.delaying_followerRelativeSpeed = 1.1;
+    this.delaying_leaderDecelerationFactor = 3;
 
-    // Glow Effect
+    // Amplifying Relation
+    this.amplifying_baseStrokeWeight = 0.5;
+    this.amplifying_strengthStrokeWeight = 2.0; // Adjusted
+    this.amplifying_baseAmplitude = 3; // Adjusted
+    this.amplifying_strengthAmplitude = 15; // Adjusted
+    this.amplifying_noiseScaleSpatial = 0.05;
+    this.amplifying_noiseScaleTime = 0.05; // Adjusted
+    this.amplifying_lineSegmentsIncrement = 2;
+    this.amplifying_animationSpeed = 0.01; // General speed for particles if needed, soundLine uses time directly
+
+    // Glow Effect (Parameters kept if you want to reuse drawGlow for other purposes)
     this.glow_blurSteps = 8;
-    this.glow_maxOpacity = 70;
+    this.glow_maxOpacity = 70; // Was used for positivity glow
     this.glow_sizeFactor = 10.0;
+
+    // Positivity Particles
+    this.positivity_showParticles = true;
+    this.positivity_particleBaseCountFactor = 0.15; // Particles per unit path length
+    this.positivity_particleStrengthFactor = 1.2;
+    this.positivity_particlePositivityFactor = 1.0;
+    this.positivity_particleSizeMin = 4.0;
+    this.positivity_particleSizeMax = 6.0;
+    this.positivity_particleSpeedFactor = 0; // Multiplied by relation's animSpeedParam
+    this.positivity_particleJitterMax = (this.e1.r + this.e2.r) / 2;
+    this.positivity_darkParticleBaseColor = color(70, 70, 70);
+    this.positivity_particleAlpha = 180;
+    this.positivity_minParticles = 1;
+    this.positivity_maxParticles = 30;
+
+    // --- Label Configuration (NEW) ---
+    this.label_show = true; // Set to false to hide label by default for this instance
+    this.label_textColor = color(0); // Default text color (black)
+    this.label_textSize = 11;
+    this.label_textOffsetY = -15; // Pixels above the line's center
+    this.label_showBackground = true;
+    this.label_backgroundColor = color(255, 255, 255, 210); // Semi-transparent white
+    this.label_backgroundPadding = 4;
+    this.label_backgroundCornerRadius = 3;
+    this.label_maxAngleDeg = 45; // Max tilt from horizontal in degrees
+  }
+
+  // Helper to get default label options from instance properties
+  _getDefaultLabelOptions() {
+    return {
+      textColor: this.label_textColor,
+      textSize: this.label_textSize,
+      textOffsetY: this.label_textOffsetY,
+      showBackground: this.label_showBackground,
+      backgroundColor: this.label_backgroundColor,
+      backgroundPadding: this.label_backgroundPadding,
+      backgroundCornerRadius: this.label_backgroundCornerRadius,
+      maxAngleDeg: this.label_maxAngleDeg,
+    };
+  }
+
+  /**
+   * Displays the relation's label.
+   * @param {object} [overrideOptions={}] Optional configuration to override instance defaults.
+   */
+  displayLabel(overrideOptions = {}) {
+    const config = { ...this._getDefaultLabelOptions(), ...overrideOptions };
+
+    const e1Pos = createVector(this.e1.x, this.e1.y);
+    const e2Pos = createVector(this.e2.x, this.e2.y);
+
+    if (p5.Vector.dist(e1Pos, e2Pos) < config.textSize * 2) {
+      // Don't draw if too short
+      return;
+    }
+
+    const midX = (e1Pos.x + e2Pos.x) / 2;
+    const midY = (e1Pos.y + e2Pos.y) / 2;
+
+    const delta = p5.Vector.sub(e2Pos, e1Pos);
+    let lineAngle = delta.heading(); // Radians
+
+    let textAngle = lineAngle;
+    const maxAngleRad = radians(config.maxAngleDeg);
+
+    if (textAngle > HALF_PI || textAngle < -HALF_PI) {
+      textAngle += PI;
+    }
+
+    if (abs(textAngle) > maxAngleRad) {
+      textAngle = 0; // Keep it horizontal if too steep
+    }
+
+    push();
+    translate(midX, midY);
+    rotate(textAngle);
+
+    let labelText = this.type || "Unknown Type";
+    if (labelText === "null") {
+      labelText = "";
+    }
+
+    fill(config.textColor);
+    textSize(config.textSize);
+    textAlign(CENTER, CENTER);
+
+    if (config.showBackground) {
+      const tw = textWidth(labelText);
+      const th = config.textSize;
+      push();
+      rectMode(CENTER);
+      fill(config.backgroundColor);
+      noStroke();
+      rect(
+        0,
+        config.textOffsetY,
+        tw + config.backgroundPadding * 2,
+        th + config.backgroundPadding * 2,
+        config.backgroundCornerRadius
+      );
+      pop();
+    }
+
+    text(labelText, 0, config.textOffsetY);
+    pop();
   }
 
   display() {
@@ -324,34 +196,8 @@ class Relation {
       return;
     }
 
-    // Centralized glow drawing for relations with a simple straight path glow
-    if (
-      this.type !== "delaying" &&
-      this.type !== "flow" &&
-      this.type !== "resonance" &&
-      this.type !== "amplifying"
-    ) {
-      let baseThicknessForGlow = 1;
-      if (this.type === "undefined") {
-        baseThicknessForGlow = map(
-          this.strength,
-          0,
-          100,
-          this.undefined_baseThicknessMin,
-          this.undefined_baseThicknessMax
-        );
-      } else if (this.type === "balancing") {
-        baseThicknessForGlow = map(
-          this.strength,
-          0,
-          100,
-          this.balancing_lineBaseThickness,
-          this.balancing_lineBaseThickness +
-            this.balancing_lineStrengthThickness
-        );
-      }
-      this.drawGlow(e1Pos, e2Pos, d, angle, baseThicknessForGlow);
-    }
+    // Positivity-based glow has been removed.
+    // The old centralized glow call block is removed. Specific relations handle their own visuals.
 
     // Call specific relation drawing function
     if (this.type === "undefined") {
@@ -369,48 +215,114 @@ class Relation {
     }
     pop();
 
+    // --- Draw Label (after the relation itself, in global coordinates) ---
+    // The displayLabel method handles its own push/pop and transformations.
+    if (this.label_show) {
+      this.displayLabel(); // Uses instance defaults (this.label_...)
+      // Or you could pass overrides: this.displayLabel({ textColor: color('blue') });
+    }
+
     this.time += 1; // Increment time for animations
   }
 
-  // Glow effect method - draws a glow along a straight line path
+  // Glow effect method - currently unused as positivity glow is removed.
+  // Kept in case you want to use it for non-positivity related glows later.
   drawGlow(p1, p2, d, ang, baseStrokeWeight) {
-    if (this.positivity === 50 || baseStrokeWeight <= 0) return;
+    // This version of glow was tied to positivity.
+    // If you reuse, make it positivity-neutral or for other effects.
+    // if (this.positivity === 50 || baseStrokeWeight <= 0) return;
+    // ... (original glow logic) ...
+  }
 
-    let glowColorVal;
-    let glowOpacity = map(
-      abs(this.positivity - 50),
+  _drawPositivityParticles(
+    pathLength,
+    getPointAndTangentAt,
+    animSpeedParam = 0.01
+  ) {
+    if (
+      !this.positivity_showParticles ||
+      this.positivity === 50 ||
+      pathLength < 5
+    )
+      return; // Min length for particles
+
+    let particleCount =
+      (pathLength *
+        this.positivity_particleBaseCountFactor *
+        abs(this.positivity - 50)) /
+      100;
+    particleCount *= map(
+      this.strength,
       0,
-      50,
-      0,
-      this.glow_maxOpacity
+      100,
+      0.5,
+      this.positivity_particleStrengthFactor
+    ); // Apply strength factor
+    particleCount *=
+      (abs(this.positivity - 50) / 50) *
+      this.positivity_particlePositivityFactor;
+    particleCount = constrain(
+      floor(particleCount),
+      this.positivity_minParticles,
+      this.positivity_maxParticles
     );
 
+    if (particleCount === 0) return;
+
+    let particleColorValue;
     if (this.positivity < 50) {
-      glowColorVal = color(0, glowOpacity);
+      particleColorValue = color(
+        red(this.positivity_darkParticleBaseColor),
+        green(this.positivity_darkParticleBaseColor),
+        blue(this.positivity_darkParticleBaseColor),
+        this.positivity_particleAlpha
+      );
     } else {
-      let baseCol = this.relationColor;
-      glowColorVal = color(
-        red(baseCol),
-        green(baseCol),
-        blue(baseCol),
-        glowOpacity
+      particleColorValue = color(
+        red(this.relationColor),
+        green(this.relationColor),
+        blue(this.relationColor),
+        this.positivity_particleAlpha
       );
     }
+    fill(particleColorValue);
+    noStroke();
 
-    push();
-    stroke(glowColorVal);
-    translate(p1.x, p1.y);
-    rotate(ang);
-    for (let i = this.glow_blurSteps; i >= 1; i--) {
-      let currentGlowWeight =
-        baseStrokeWeight +
-        baseStrokeWeight *
-          (this.glow_sizeFactor - 1) *
-          (i / this.glow_blurSteps);
-      strokeWeight(currentGlowWeight);
-      line(0, 0, d, 0);
+    let effectiveAnimSpeed =
+      typeof animSpeedParam === "number" ? animSpeedParam : 0.01;
+    let baseSpeed =
+      this.positivity_particleSpeedFactor * effectiveAnimSpeed * 100; // Scaled up a bit
+
+    for (let i = 0; i < particleCount; i++) {
+      let timeOffsetFactor = (i * 0.61803398875) % 1; // Golden ratio for pseudo-random but stable offset
+      let progress =
+        (this.time * baseSpeed + timeOffsetFactor * pathLength) % pathLength;
+      let t = progress / pathLength;
+
+      let pointData = getPointAndTangentAt(t);
+      if (!pointData || !pointData.position || !pointData.tangent) continue;
+
+      let { position, tangent } = pointData;
+      let particleSize = random(
+        this.positivity_particleSizeMin,
+        this.positivity_particleSizeMax
+      );
+
+      let perpendicular = createVector(-tangent.y, tangent.x); // Already normalized by provider or normalized here
+      if (tangent.magSq() > 0.0001 && perpendicular.magSq() === 0)
+        perpendicular.set(tangent.x, tangent.y).rotate(HALF_PI); // handle purely vertical/horizontal
+      if (perpendicular.magSq() === 0)
+        perpendicular.set(0, 1); // ultimate fallback for jitter
+      else perpendicular.normalize();
+
+      let jitterOffset = random(
+        -this.positivity_particleJitterMax,
+        this.positivity_particleJitterMax
+      );
+      let finalPos = p5.Vector.add(position, perpendicular.mult(jitterOffset));
+
+      ellipse(finalPos.x, finalPos.y, particleSize, particleSize);
     }
-    pop();
   }
 
   drawArrow(x, y, rot, size, col) {
@@ -440,9 +352,16 @@ class Relation {
     let end2Thickness =
       midThickness * this.undefined_endFactor + end2RadiusInfluence;
 
-    let colWithAlpha = this.relationColor;
-    colWithAlpha.setAlpha(this.undefined_strokeAlpha);
-    fill(colWithAlpha);
+    let colWithAlpha = this.relationColor; // Assuming this returns a p5.Color object
+    let tempAlpha = this.undefined_strokeAlpha; // Store original alpha setting
+
+    // p5.Color objects are mutable. If relationColor is shared, this changes it globally.
+    // It's better to create a new color or manage alpha carefully.
+    // For now, assuming getColor() provides a fresh color object or this behavior is intended.
+    let r = red(this.relationColor);
+    let g = green(this.relationColor);
+    let b = blue(this.relationColor);
+    fill(r, g, b, tempAlpha);
     noStroke();
 
     push();
@@ -476,8 +395,21 @@ class Relation {
       end1Thickness / 2
     );
     endShape(CLOSE);
+
+    const getPointAndTangent_Undefined = (t_norm) => {
+      return {
+        position: createVector(t_norm * d, 0),
+        tangent: createVector(1, 0).normalize(),
+      };
+    };
+    this._drawPositivityParticles(
+      d,
+      getPointAndTangent_Undefined,
+      this.undefined_animationSpeed
+    );
+
     pop();
-    colWithAlpha.setAlpha(255);
+    // colWithAlpha.setAlpha(255); // This line might not be needed if alpha is handled locally.
   }
 
   balancing(p1, p2, d, ang) {
@@ -542,6 +474,19 @@ class Relation {
       fill(tempCol);
       ellipse(d / 2, 0, currentSize, currentSize);
     }
+
+    const getPointAndTangent_Balancing = (t_norm) => {
+      return {
+        position: createVector(t_norm * d, 0),
+        tangent: createVector(1, 0).normalize(),
+      };
+    };
+    this._drawPositivityParticles(
+      d,
+      getPointAndTangent_Balancing,
+      this.balancing_animationSpeed
+    );
+
     pop();
   }
 
@@ -561,7 +506,7 @@ class Relation {
       this.flow_arrowBaseSize + this.flow_arrowStrengthSize
     );
     let mainCol = this.relationColor;
-    let arrowCol = this.relationColor;
+    // let arrowCol = this.relationColor; // Already mainCol
 
     push();
     translate(p1.x, p1.y);
@@ -582,41 +527,7 @@ class Relation {
       curvePoints.push(createVector(x, yOffset));
     }
 
-    if (this.positivity !== 50 && lineThickness > 0) {
-      let glowColorVal;
-      let glowOpacity = map(
-        abs(this.positivity - 50),
-        0,
-        50,
-        0,
-        this.glow_maxOpacity
-      );
-      if (this.positivity < 50) {
-        glowColorVal = color(0, glowOpacity);
-      } else {
-        glowColorVal = color(
-          red(mainCol),
-          green(mainCol),
-          blue(mainCol),
-          glowOpacity
-        );
-      }
-      stroke(glowColorVal);
-      noFill();
-      for (let i = this.glow_blurSteps; i >= 1; i--) {
-        let currentGlowWeight =
-          lineThickness +
-          lineThickness *
-            (this.glow_sizeFactor - 1) *
-            (i / this.glow_blurSteps);
-        strokeWeight(currentGlowWeight);
-        beginShape();
-        for (let v of curvePoints) {
-          vertex(v.x, v.y);
-        }
-        endShape();
-      }
-    }
+    // Glow based on positivity removed here
 
     noFill();
     stroke(mainCol);
@@ -635,52 +546,91 @@ class Relation {
       pathTotalLength += len;
     }
 
-    if (pathTotalLength < 0.1) {
-      pop();
-      return;
-    }
+    if (pathTotalLength > 0.1) {
+      // Condition for arrows and particles
+      let overallProgress = (this.time * this.flow_animationSpeed) % 1.0;
+      let directionPhase = floor(overallProgress * 2);
+      let phaseProgressTime = (overallProgress * 2) % 1.0;
 
-    let overallProgress = (this.time * this.flow_animationSpeed) % 1.0;
-    let directionPhase = floor(overallProgress * 2);
-    let phaseProgressTime = (overallProgress * 2) % 1.0;
+      for (let i = 0; i < this.flow_numArrowPairs; i++) {
+        let initialPhaseOffset = i / this.flow_numArrowPairs;
+        let progress = (phaseProgressTime + initialPhaseOffset) % 1;
+        let distAlongPath;
+        let baseAngleOffset = 0;
 
-    for (let i = 0; i < this.flow_numArrowPairs; i++) {
-      let initialPhaseOffset = i / this.flow_numArrowPairs;
-      let progress = (phaseProgressTime + initialPhaseOffset) % 1;
-
-      let distAlongPath;
-      let baseAngleOffset = 0;
-
-      if (directionPhase === 0) {
-        distAlongPath = progress * pathTotalLength;
-      } else {
-        distAlongPath = (1 - progress) * pathTotalLength;
-        baseAngleOffset = PI;
-      }
-
-      let currentDist = 0;
-      for (let k = 0; k < segLengths.length; k++) {
-        if (currentDist + segLengths[k] >= distAlongPath) {
-          let partProgress =
-            (distAlongPath - currentDist) /
-            (segLengths[k] > 0 ? segLengths[k] : 1);
-          partProgress = constrain(partProgress, 0, 1);
-          let pA = curvePoints[k];
-          let pB = curvePoints[k + 1];
-          let finalPos = p5.Vector.lerp(pA, pB, partProgress);
-          let dirVec = p5.Vector.sub(pB, pA);
-          let finalAngle = dirVec.heading() + baseAngleOffset;
-          this.drawArrow(
-            finalPos.x,
-            finalPos.y,
-            finalAngle,
-            arrowSize,
-            arrowCol
-          );
-          break;
+        if (directionPhase === 0) {
+          distAlongPath = progress * pathTotalLength;
+        } else {
+          distAlongPath = (1 - progress) * pathTotalLength;
+          baseAngleOffset = PI;
         }
-        currentDist += segLengths[k];
+
+        let currentDist = 0;
+        for (let k = 0; k < segLengths.length; k++) {
+          if (currentDist + segLengths[k] >= distAlongPath) {
+            let partProgress =
+              (distAlongPath - currentDist) /
+              (segLengths[k] > 0 ? segLengths[k] : 1);
+            partProgress = constrain(partProgress, 0, 1);
+            let pA = curvePoints[k];
+            let pB = curvePoints[k + 1];
+            let finalPos = p5.Vector.lerp(pA, pB, partProgress);
+            let dirVec = p5.Vector.sub(pB, pA);
+            let finalAngle = dirVec.heading() + baseAngleOffset;
+            this.drawArrow(
+              finalPos.x,
+              finalPos.y,
+              finalAngle,
+              arrowSize,
+              mainCol
+            );
+            break;
+          }
+          currentDist += segLengths[k];
+        }
       }
+
+      // Add positivity particles for flow
+      const getPointAndTangent_Flow = (t_norm) => {
+        if (t_norm < 0 || t_norm > 1) t_norm = ((t_norm % 1.0) + 1.0) % 1.0;
+        let distTarget = t_norm * pathTotalLength;
+        let currentDist = 0;
+        for (let k = 0; k < segLengths.length; k++) {
+          if (currentDist + segLengths[k] >= distTarget) {
+            let partProg =
+              (distTarget - currentDist) /
+              (segLengths[k] > 0 ? segLengths[k] : 0.001);
+            partProg = constrain(partProg, 0, 1);
+            let pA = curvePoints[k];
+            let pB = curvePoints[k + 1];
+            let pos = p5.Vector.lerp(pA, pB, partProg);
+            let tangent = p5.Vector.sub(pB, pA);
+            if (tangent.magSq() < 0.0001) {
+              // Avoid issues with zero-length segments
+              if (k > 0)
+                tangent = p5.Vector.sub(curvePoints[k], curvePoints[k - 1]);
+              else tangent = createVector(1, 0); // Fallback
+            }
+            return { position: pos, tangent: tangent.normalize() };
+          }
+          currentDist += segLengths[k];
+        }
+        // Fallback for t_norm approx 1 or if loop finishes unexpectedly
+        let lastTangent = p5.Vector.sub(
+          curvePoints[curvePoints.length - 1],
+          curvePoints[curvePoints.length - 2]
+        );
+        if (lastTangent.magSq() < 0.0001) lastTangent = createVector(1, 0);
+        return {
+          position: curvePoints[curvePoints.length - 1].copy(),
+          tangent: lastTangent.normalize(),
+        };
+      };
+      this._drawPositivityParticles(
+        pathTotalLength,
+        getPointAndTangent_Flow,
+        this.flow_animationSpeed
+      );
     }
     pop();
   }
@@ -740,47 +690,25 @@ class Relation {
         rectCenterPos + currentRectLength / 2 > -rectLengths[0] &&
         rectCenterPos - currentRectLength / 2 < d + rectLengths[0]
       ) {
-        if (this.positivity !== 50 && rectWidth > 0) {
-          let glowColorVal;
-          let glowOpacity = map(
-            abs(this.positivity - 50),
-            0,
-            50,
-            0,
-            this.glow_maxOpacity
-          );
-          if (this.positivity < 50) {
-            glowColorVal = color(0, glowOpacity);
-          } else {
-            glowColorVal = color(
-              red(mainCol),
-              green(mainCol),
-              blue(mainCol),
-              glowOpacity
-            );
-          }
-
-          noStroke();
-          for (let j = this.glow_blurSteps; j >= 1; j--) {
-            let expansionFactor =
-              (this.glow_sizeFactor - 1) * (j / this.glow_blurSteps);
-            let glowExpansion = rectWidth * expansionFactor * 0.5;
-            let glowW = rectWidth + glowExpansion * 2;
-            let glowL = currentRectLength + glowExpansion * 2;
-            let R = red(glowColorVal);
-            let G = green(glowColorVal);
-            let B = blue(glowColorVal);
-            let A = alpha(glowColorVal) / this.glow_blurSteps;
-            fill(R, G, B, A);
-            rect(rectCenterPos, 0, glowL, glowW);
-          }
-        }
-
+        // Glow based on positivity removed here
         fill(mainCol);
         noStroke();
         rect(rectCenterPos, 0, currentRectLength, rectWidth);
       }
     }
+
+    const getPointAndTangent_Resonance = (t_norm) => {
+      return {
+        position: createVector(t_norm * d, 0),
+        tangent: createVector(1, 0).normalize(),
+      };
+    };
+    this._drawPositivityParticles(
+      d,
+      getPointAndTangent_Resonance,
+      this.resonance_animationSpeed
+    );
+
     pop();
   }
 
@@ -807,27 +735,24 @@ class Relation {
 
     let overallCycleProgress = (this.time * this.delaying_animationSpeed) % 1.0;
     let directionPhase = floor(overallCycleProgress * 2);
-    let leaderLinearProgress = (overallCycleProgress * 2) % 1.0; // Linear progress for current phase
+    let leaderLinearProgress = (overallCycleProgress * 2) % 1.0;
 
     let startX = 0;
     let endX = d;
     let arrowAngle = 0;
 
     if (directionPhase === 1) {
-      // e2 -> e1
       startX = d;
       endX = 0;
       arrowAngle = PI;
     }
 
-    // Leader Arrow (A1) - Apply easing
     let easedLeaderProgress = this.easeOutDynamic(
       leaderLinearProgress,
       this.delaying_leaderDecelerationFactor
     );
     let posLeaderX = lerp(startX, endX, easedLeaderProgress);
 
-    // Follower Arrow (A2) - Calculate target linear progress, then apply same easing
     let followerTargetLinearProgress = 0;
     if (leaderLinearProgress >= this.delaying_leaderStartProgress) {
       let activeTimeForFollower =
@@ -835,7 +760,6 @@ class Relation {
       followerTargetLinearProgress =
         activeTimeForFollower * this.delaying_followerRelativeSpeed;
     }
-    // Follower cannot get ahead of leader in linear terms, and cannot be negative
     followerTargetLinearProgress = constrain(
       followerTargetLinearProgress,
       0,
@@ -845,7 +769,7 @@ class Relation {
       followerTargetLinearProgress,
       0,
       1.0
-    ); // General sanity cap at 1.0
+    );
 
     let easedFollowerProgress = this.easeOutDynamic(
       followerTargetLinearProgress,
@@ -853,76 +777,9 @@ class Relation {
     );
     let posFollowerX = lerp(startX, endX, easedFollowerProgress);
 
-    // Determine actual start and end for the wire based on eased positions and direction
-    let wireDrawStartX, wireDrawEndX;
-    if (directionPhase === 0) {
-      // e1 -> e2, startX is 0
-      wireDrawStartX = min(posLeaderX, posFollowerX); // Should be posFollowerX if follower is behind
-      wireDrawEndX = max(posLeaderX, posFollowerX); // Should be posLeaderX
-      // More robustly:
-      wireDrawStartX =
-        easedFollowerProgress <= easedLeaderProgress
-          ? posFollowerX
-          : posLeaderX;
-      wireDrawEndX =
-        easedFollowerProgress <= easedLeaderProgress
-          ? posLeaderX
-          : posFollowerX;
-    } else {
-      // e2 -> e1, startX is d
-      wireDrawStartX = max(posLeaderX, posFollowerX); // Should be posFollowerX if follower is behind (larger X value)
-      wireDrawEndX = min(posLeaderX, posFollowerX); // Should be posLeaderX
-      // More robustly:
-      wireDrawStartX =
-        easedFollowerProgress <= easedLeaderProgress
-          ? posFollowerX
-          : posLeaderX; // follower has less progress from d, so larger X
-      wireDrawEndX =
-        easedFollowerProgress <= easedLeaderProgress
-          ? posLeaderX
-          : posFollowerX; // leader has more progress from d, so smaller X
-    }
-    // Simplified for drawing: use the calculated positions directly
-    // The line function itself doesn't care about order for a simple line.
     let wireDistance = abs(posLeaderX - posFollowerX);
 
-    if (
-      this.positivity !== 50 &&
-      lineThickness > 0 &&
-      wireDistance > lineThickness * 0.5
-    ) {
-      let glowColorVal;
-      let glowOpacity = map(
-        abs(this.positivity - 50),
-        0,
-        50,
-        0,
-        this.glow_maxOpacity
-      );
-      if (this.positivity < 50) {
-        glowColorVal = color(0, glowOpacity);
-      } else {
-        glowColorVal = color(
-          red(mainCol),
-          green(mainCol),
-          blue(mainCol),
-          glowOpacity
-        );
-      }
-
-      push();
-      stroke(glowColorVal);
-      for (let i = this.glow_blurSteps; i >= 1; i--) {
-        let currentGlowWeight =
-          lineThickness +
-          lineThickness *
-            (this.glow_sizeFactor - 1) *
-            (i / this.glow_blurSteps);
-        strokeWeight(currentGlowWeight);
-        line(posFollowerX, 0, posLeaderX, 0);
-      }
-      pop();
-    }
+    // Glow based on positivity removed here
 
     stroke(mainCol);
     strokeWeight(lineThickness);
@@ -933,31 +790,123 @@ class Relation {
       followerTargetLinearProgress > 0 ||
       this.delaying_leaderStartProgress === 0
     ) {
-      // Draw follower if it should have moved
       this.drawArrow(posFollowerX, 0, arrowAngle, arrowSize, mainCol);
     }
 
+    if (wireDistance > 0.1) {
+      const getPointAndTangent_Delaying = (t_norm) => {
+        let xPos = lerp(posFollowerX, posLeaderX, t_norm);
+        let tangentVec = createVector(posLeaderX - posFollowerX, 0);
+        if (tangentVec.magSq() < 0.0001 && directionPhase === 0)
+          tangentVec = createVector(1, 0);
+        else if (tangentVec.magSq() < 0.0001 && directionPhase === 1)
+          tangentVec = createVector(-1, 0);
+        else tangentVec.normalize();
+        return {
+          position: createVector(xPos, 0),
+          tangent: tangentVec,
+        };
+      };
+      this._drawPositivityParticles(
+        wireDistance,
+        getPointAndTangent_Delaying,
+        this.delaying_animationSpeed
+      );
+    }
     pop();
   }
 
   amplifying(p1, p2, d, ang) {
-    // This is a placeholder for your existing amplifying logic.
-    // It should use p1, p2, d, ang for positioning, and access
-    // this.strength, this.relationColor, this.positivity etc.
-    // Example:
-    // push();
-    // translate(p1.x, p1.y);
-    // rotate(ang);
-    // // Your glow logic for amplifying if specific
-    // stroke(this.relationColor);
-    // strokeWeight(map(this.strength, 0, 100, 2, 12)); // Example use of strength
-    // line(0,0, d,0);
-    // // ... more complex visuals ...
-    // pop();
+    let weight = map(
+      this.strength,
+      0,
+      100,
+      this.amplifying_baseStrokeWeight,
+      this.amplifying_baseStrokeWeight + this.amplifying_strengthStrokeWeight
+    );
+    let currentAmplitude = map(
+      this.strength,
+      0,
+      100,
+      this.amplifying_baseAmplitude,
+      this.amplifying_baseAmplitude + this.amplifying_strengthAmplitude
+    );
+
+    push();
+    translate(p1.x, p1.y);
+    rotate(ang);
+
+    // Call soundLine with d (distance along transformed x-axis)
+    this.soundLine(
+      d,
+      currentAmplitude,
+      this.amplifying_lineSegmentsIncrement,
+      this.time, // Global time
+      weight,
+      this.relationColor
+    );
+
+    const getPointAndTangent_Amplifying = (t_norm) => {
+      // Particles along the central axis of the sound wave
+      return {
+        position: createVector(t_norm * d, 0),
+        tangent: createVector(1, 0).normalize(),
+      };
+    };
+    this._drawPositivityParticles(
+      d,
+      getPointAndTangent_Amplifying,
+      this.amplifying_animationSpeed
+    );
+
+    pop();
+  }
+
+  soundLine(dist, mainAmplitude, increment, animationTime, weight, strokeCol) {
+    let prevX = 0;
+    let currentX = 0;
+    let prevY = 0;
+    let currentY = 0;
+    let envelopeAmplifier = 0; // For amplitude shaping/envelope
+
+    strokeWeight(weight);
+    stroke(strokeCol);
+    noFill();
+
+    for (let i = 0; i <= dist; i += increment) {
+      currentX = i; // Use i directly for currentX to avoid accumulation errors and ensure it reaches dist
+
+      let noiseVal = noise(
+        i * this.amplifying_noiseScaleSpatial,
+        animationTime * this.amplifying_noiseScaleTime
+      );
+
+      // Calculate envelope (0 to 1)
+      let progress = i / dist;
+      if (progress < 1 / 6) {
+        envelopeAmplifier = map(progress, 0, 1 / 6, 0, 1);
+      } else if (progress < 5 / 6) {
+        envelopeAmplifier = 1;
+      } else {
+        envelopeAmplifier = map(progress, 5 / 6, 1, 1, 0);
+      }
+      envelopeAmplifier = constrain(envelopeAmplifier, 0, 1);
+
+      // Calculate Y position
+      // noise() is 0-1, so (noiseVal-0.5)*2 is -1 to 1.
+      currentY = (noiseVal - 0.5) * 2 * mainAmplitude * envelopeAmplifier;
+
+      if (i > 0) {
+        // Don't draw line for the very first point
+        line(prevX, prevY, currentX, currentY);
+      }
+      prevX = currentX;
+      prevY = currentY;
+    }
   }
 
   easeOutDynamic(t, factor) {
-    if (factor <= 1 || factor === undefined) return t; // Linear if factor is 1 or less, or not provided
+    if (factor <= 1 || factor === undefined) return t;
     return 1 - pow(1 - constrain(t, 0, 1), factor);
   }
 }
