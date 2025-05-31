@@ -207,6 +207,8 @@ async function handleInputs() {
   if (sensorData.button_set && sensorData.prev_button_set) {
     selectedRelation.type = calculateType();
   }
+
+  //update positivity of relation
   if (
     sensorData.encoder_negative_positive !==
     sensorData.prev_encoder_negative_positive
@@ -216,6 +218,8 @@ async function handleInputs() {
       sensorData.encoder_negative_positive;
     selectedRelation.positivity -= difference;
   }
+
+  //update strength of relation
   if (sensorData.encoder_weak_strong !== sensorData.prev_encoder_weak_strong) {
     let difference =
       sensorData.prev_encoder_weak_strong - sensorData.encoder_weak_strong;
@@ -348,7 +352,7 @@ function calculateType() {
     "amplifying",
     "flow",
     "resonance",
-    "delay",
+    "delaying",
   ];
 
   const value = 1 - sensorData.knob_type;
@@ -448,7 +452,7 @@ function getRandomRelationType() {
     "amplifying",
     "flow",
     "resonance",
-    "delay",
+    "delaying",
   ];
   return types[Math.floor(random(types.length))];
 }
