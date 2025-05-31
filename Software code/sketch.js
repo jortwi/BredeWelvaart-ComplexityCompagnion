@@ -15,6 +15,12 @@ let aiMode = "undefined"; //current AI mode
 let ai_message = "no message"; //current AI message
 let ai_thinking = "false"; //specifies if "thinking" LED should be turned on
 
+//keyBoard Mode
+let keyBoardMode = true;
+let userIsTyping = false;
+let typedText = "";
+let finalText = "";
+
 function preload() {
   font = loadFont("../assets/SpaceMono-Bold.ttf");
   backgroundTextureImage = loadImage("/assets/white-rough-texture-pattern.jpg");
@@ -78,6 +84,11 @@ function draw() {
   drawProgressBar();
 
   // sensorData.encoder_select;
+
+  // Display typed text only while typing
+  if (userIsTyping) {
+    text(typedText, width / 2, height - 15);
+  }
 }
 
 function windowResized() {
@@ -167,22 +178,48 @@ async function handleInputs() {
   }
 
   //Record and transcribe while holding Add button
-  if (sensorData.button_add && !sensorData.prev_button_add) {
-    audioSwitch.hold();
-  }
-  if (!sensorData.button_add && sensorData.prev_button_add) {
-    let transcription = await audioSwitch.release();
-    addElement(
-      new Element({
-        x: random(1920),
-        y: random(1080),
-        r: 50,
-        increment: 0.001,
-        c1: color("#DDBEA9"),
-        c2: color("#F7DECA"),
-        name: transcription,
-      })
-    );
+  if (!keyBoardMode) {
+    if (sensorData.button_add && !sensorData.prev_button_add) {
+      audioSwitch.hold();
+    }
+    if (!sensorData.button_add && sensorData.prev_button_add) {
+      let transcription = await audioSwitch.release();
+      addElement(
+        new Element({
+          x: random(width),
+          y: random(height),
+          r: 20,
+          increment: 0.001,
+          c1: color(getColor()),
+          c2: color(getColor()),
+          name: transcription,
+        })
+      );
+    }
+  } else {
+    if (sensorData.button_add && !sensorData.prev_button_add) {
+      //enter keyboard mode
+      if (!userIsTyping) {
+        userIsTyping = true;
+        typedText = ""; // clear buffer to start fresh
+      } else {
+        userIsTyping = false;
+        finalText = typedText;
+
+        //add element with the final text as name
+        addElement(
+          new Element({
+            x: random(1920),
+            y: random(1080),
+            r: 20,
+            increment: 0.001,
+            c1: color(getColor()),
+            c2: color(getColor()),
+            name: finalText,
+          })
+        );
+      }
+    }
   }
 
   //Remove selected element when Remove button is pressed
@@ -281,6 +318,7 @@ async function handleInputs() {
       ].x -= 3;
     }
   }
+  //Size Encoder
   if (sensorData.encoder_size !== sensorData.prev_encoder_size) {
     let difference = sensorData.prev_encoder_size - sensorData.encoder_size;
     if (selectedAorB === "A") {
@@ -300,6 +338,17 @@ async function handleInputs() {
     ai_thinking = "true";
     ai_message = await getAiMessage();
     ai_thinking = "false";
+  }
+
+  // --- Keyboard Mode --- //
+  if (
+    sensorData["_01_rotenc_sw"] &&
+    sensorData.button_a &&
+    sensorData.button_b &&
+    !sensorData.prev_button_a
+  ) {
+    keyBoardMode = !keyBoardMode;
+    console.log("keyBoard Mode: ", keyBoardMode);
   }
 }
 
@@ -455,4 +504,42 @@ function getRandomRelationType() {
     "delaying",
   ];
   return types[Math.floor(random(types.length))];
+}
+
+// --- Typing mode --- //
+// Toggle typing mode with any key press
+function keyPressed() {
+  // Use Enter to toggle typing mode off optionally
+  if (keyCode === ENTER) {
+    userIsTyping = false;
+    finalText = typedText;
+
+    //add element with the final text as name
+    addElement(
+      new Element({
+        x: random(width),
+        y: random(height),
+        r: 20,
+        increment: 0.001,
+        c1: color(getColor()),
+        c2: color(getColor()),
+        name: finalText,
+      })
+    );
+
+    return false; // prevent default
+  }
+
+  // Delete character
+  if (userIsTyping && keyCode === BACKSPACE) {
+    typedText = typedText.slice(0, -1);
+    return false;
+  }
+}
+
+// Capture characters while typing
+function keyTyped() {
+  if (userIsTyping && key !== "Enter") {
+    typedText += key;
+  }
 }

@@ -16,17 +16,17 @@ class Relation {
 
     // Undefined (Neutral) Relation
     this.undefined_strokeAlpha = 150;
-    this.undefined_baseThicknessMin = 0.5;
-    this.undefined_baseThicknessMax = 4;
+    this.undefined_baseThicknessMin = 4;
+    this.undefined_baseThicknessMax = 12;
     this.undefined_endFactor = 1.5;
     this.undefined_radiusInfluence = 0.05;
     this.undefined_animationSpeed = 0.005; // For particles
 
     // Balancing Relation
-    this.balancing_lineBaseThickness = 0.5;
-    this.balancing_lineStrengthThickness = 3;
-    this.balancing_blobBaseSize = 6;
-    this.balancing_blobStrengthSize = 10;
+    this.balancing_lineBaseThickness = 2;
+    this.balancing_lineStrengthThickness = 5;
+    this.balancing_blobBaseSize = 15;
+    this.balancing_blobStrengthSize = 25;
     this.balancing_blobMergeFactor = 1.6;
     this.balancing_animationSpeed = 0.015;
 
@@ -34,27 +34,27 @@ class Relation {
     this.flow_lineBaseThickness = 1;
     this.flow_lineStrengthThickness = 4;
     this.flow_numArrowPairs = 3;
-    this.flow_arrowBaseSize = 4;
+    this.flow_arrowBaseSize = 16;
     this.flow_arrowStrengthSize = 6;
-    this.flow_animationSpeed = 0.008;
-    this.flow_waveAmplitude = 10;
+    this.flow_animationSpeed = 0.002;
+    this.flow_waveAmplitude = 7;
     this.flow_waveFrequency = 0.1;
     this.flow_waveTimeSpeed = 0.05;
-    this.flow_segments = 20;
+    this.flow_segments = 15;
 
     // Resonance Relation
     this.resonance_rectBaseLength = 8;
     this.resonance_rectStrengthLength = 12;
     this.resonance_rectBaseWidth = 3;
-    this.resonance_rectStrengthWidth = 8;
-    this.resonance_lengthRatios = [1.0, 0.75, 0.5];
-    this.resonance_animationSpeed = 0.006;
-    this.resonance_spacingFactor = 1.5;
+    this.resonance_rectStrengthWidth = 100;
+    this.resonance_lengthRatios = [1.3, 0.75, 0.2];
+    this.resonance_animationSpeed = 0.003;
+    this.resonance_spacingFactor = 1.2;
 
     // Delaying Relation
     this.delaying_lineBaseThickness = 0.5;
     this.delaying_lineStrengthThickness = 3;
-    this.delaying_arrowBaseSize = 5;
+    this.delaying_arrowBaseSize = 7;
     this.delaying_arrowStrengthSize = 8;
     this.delaying_animationSpeed = 0.003;
     this.delaying_leaderStartProgress = 0.15;
@@ -62,7 +62,7 @@ class Relation {
     this.delaying_leaderDecelerationFactor = 3;
 
     // Amplifying Relation
-    this.amplifying_baseStrokeWeight = 0.5;
+    this.amplifying_baseStrokeWeight = 2;
     this.amplifying_strengthStrokeWeight = 2.0; // Adjusted
     this.amplifying_baseAmplitude = 3; // Adjusted
     this.amplifying_strengthAmplitude = 15; // Adjusted
@@ -85,18 +85,18 @@ class Relation {
     this.positivity_particleSizeMax = 6.0;
     this.positivity_particleSpeedFactor = 0; // Multiplied by relation's animSpeedParam
     this.positivity_particleJitterMax = (this.e1.r + this.e2.r) / 2;
-    this.positivity_darkParticleBaseColor = color(70, 70, 70);
+    this.positivity_darkParticleBaseColor = color("#282828");
     this.positivity_particleAlpha = 180;
     this.positivity_minParticles = 1;
     this.positivity_maxParticles = 30;
 
     // --- Label Configuration (NEW) ---
     this.label_show = true; // Set to false to hide label by default for this instance
-    this.label_textColor = color(0); // Default text color (black)
+    this.label_textColor = color("#282828"); // Default text color (black)
     this.label_textSize = 11;
     this.label_textOffsetY = -15; // Pixels above the line's center
     this.label_showBackground = true;
-    this.label_backgroundColor = color(255, 255, 255, 210); // Semi-transparent white
+    this.label_backgroundColor = color(255, 255, 255, 170); // Semi-transparent white
     this.label_backgroundPadding = 4;
     this.label_backgroundCornerRadius = 3;
     this.label_maxAngleDeg = 45; // Max tilt from horizontal in degrees
@@ -155,6 +155,9 @@ class Relation {
     let labelText = this.type || "Unknown Type";
     if (labelText === "null") {
       labelText = "";
+    }
+    if (labelText === "amplifying") {
+      labelText = "Reinforcing";
     }
 
     fill(config.textColor);

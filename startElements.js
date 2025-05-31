@@ -49,8 +49,9 @@ const colorScheme = [
   "#FF0000", //red
   "#C300FF", //purple
   "#1100FF", //blue
-  "#F0EAE0", //white
+  //white removed due to bad visibility --> original: f0eae0
   "#282828", //black
+  "#00fa04", //green
 ];
 
 function getColor() {

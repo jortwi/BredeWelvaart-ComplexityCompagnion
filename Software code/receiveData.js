@@ -13,6 +13,7 @@ let sensorData = {
   _01_add: 0,
   _01_rem: 0,
   _01_sel: 0,
+  _01_rotenc_sw: 0,
 
   //CC-02
   _02_refl_fut: 0,
@@ -107,6 +108,8 @@ OOCSI.subscribe("CC-01", function (msg) {
   retrieveButton("01_add", "button_add", msg);
   retrieveButton("01_rem", "button_remove", msg);
   retrieveEncoder("01_sel", "encoder_select", msg);
+
+  sensorData["_01_rotenc_sw"] = msg.data.rotenc_sw;
 });
 
 OOCSI.subscribe("CC-02", function (msg) {

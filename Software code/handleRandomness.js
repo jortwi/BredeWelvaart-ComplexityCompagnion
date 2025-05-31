@@ -50,7 +50,7 @@ function handleRandomness() {
       new Element({
         x: random(width),
         y: random(height),
-        r: random(40 * (1 - uncertainty), 70 * uncertainty), //can be very big or small if uncertainty is high
+        r: random(20 * (1 - uncertainty), 60 * uncertainty), //can be very big or small if uncertainty is high
         name: "",
         increment: 0.001,
         c1: color(getColor()),
