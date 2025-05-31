@@ -4,6 +4,7 @@
 #include <Wire.h>             //for I2C = oled
 #include <Adafruit_GFX.h>     //for oled
 #include <Adafruit_SSD1306.h> //for oled
+#include <Encoder.h> //for rotary encoder
 
 // --- OLED --- //
 #define SCREEN_WIDTH 128 // OLED width in pixels
@@ -84,19 +85,9 @@ unsigned long pauseStartB = 0;
 unsigned long lastLoopTime = 0;
 const unsigned long loopInterval = 50; // Same timing, but non-blocking
 
-// --- Rotary Encoder Interrupt --- //
-void IRAM_ATTR handleEncoderInterrupt()
-{
-    if (digitalRead(ROTENC_B) == digitalRead(ROTENC_A))
-    {
-        encoderSteps++;
-    }
-    else
-    {
-        encoderSteps--;
-    }
-    encoderMoved = true;
-}
+// --- Rotary Encoder --- //
+Encoder myEncoder(ROTENC_A, ROTENC_B);
+long oldEnc  = -999;
 
 void setup()
 {
@@ -128,7 +119,7 @@ void setup()
     pinMode(ROTENC_SW, INPUT_PULLDOWN);
 
     // attach interrupt for rotary encoders -- without this due to other tasks the turning of the knob may not be recognized
-    attachInterrupt(digitalPinToInterrupt(ROTENC_A), handleEncoderInterrupt, CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(ROTENC_A), handleEncoderInterrupt, CHANGE);
 
     // set all LEDs to low
     digitalWrite(D1, LOW);
@@ -179,28 +170,33 @@ void loop()
     stateSW2 = digitalRead(SW2);
     stateSW3 = digitalRead(SW3);
     stateSW4 = digitalRead(SW4);
-    stateROTENC_A = digitalRead(ROTENC_A);
-    stateROTENC_B = digitalRead(ROTENC_B);
+    // stateROTENC_A = digitalRead(ROTENC_A);
+    // stateROTENC_B = digitalRead(ROTENC_B);
     stateROTENC_SW = digitalRead(ROTENC_SW);
     stateD1 = digitalRead(D1);
     stateD2 = digitalRead(D2);
     stateD3 = digitalRead(D3);
 
     // --- Rotary Encoder --- //
-    if (encoderMoved)
-    {
-        noInterrupts();
-        int steps = encoderSteps;
-        encoderSteps = 0;
-        encoderMoved = false;
-        interrupts();
+    // if (encoderMoved)
+    // {
+    //     noInterrupts();
+    //     int steps = encoderSteps;
+    //     encoderSteps = 0;
+    //     encoderMoved = false;
+    //     interrupts();
 
-        encoderPosition += steps;
-        encoderValue = encoderPosition;
+    //     encoderPosition += steps;
+    //     encoderValue = encoderPosition;
 
-        Serial.print("Encoder position: ");
-        Serial.println(encoderPosition);
-    }
+    //     Serial.print("Encoder position: ");
+    //     Serial.println(encoderPosition);
+    // }
+      long newEnc = myEncoder.read();
+  if (newEnc != oldEnc) {
+    oldEnc = newEnc;
+    // Serial.println(newPosition);
+  }
 
     // --- OOCSI --- //
 
@@ -214,7 +210,7 @@ void loop()
         oocsi.addInt("01_b", stateSW2);
         oocsi.addInt("01_add", stateSW3);
         oocsi.addInt("01_rem", stateSW4);
-        oocsi.addInt("01_sel", encoderValue); // rotary encoder value
+        oocsi.addInt("01_sel", newEnc / 4); // rotary encoder value
         oocsi.addInt("rotenc_a", stateROTENC_A);
         oocsi.addInt("rotenc_b", stateROTENC_B);
         oocsi.addInt("rotenc_sw", stateROTENC_SW);
