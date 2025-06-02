@@ -17,7 +17,7 @@ function getStartElements(index = 0) {
         increment: 0.001,
         c1: color(getColor()),
         c2: color(getColor()),
-        name: "Transforming Practices",
+        name: "Social Media",
       },
       {
         x: screenSize.x / 5,
@@ -26,7 +26,7 @@ function getStartElements(index = 0) {
         increment: 0.001,
         c1: color(getColor()),
         c2: color(getColor()),
-        name: "Algemene Rekenkamer",
+        name: "Addiction",
       },
       {
         x: random(screenSize.x),
@@ -35,7 +35,7 @@ function getStartElements(index = 0) {
         increment: 0.001,
         c1: color(getColor()),
         c2: color(getColor()),
-        name: "Eindhoven",
+        name: "Big Tech",
       },
     ],
   ];
@@ -57,4 +57,13 @@ const colorScheme = [
 function getColor() {
   //return random color from the color scheme
   return colorScheme[Math.floor(random(colorScheme.length))];
+}
+
+function getColorPair() {
+  let availableColors = [...colorScheme];
+  let index = Math.floor(random(colorScheme.length));
+  let c1 = availableColors.splice(index, 1);
+  let c2 = availableColors[Math.floor(random(availableColors.length))];
+  // console.log(colorScheme, availableColors);
+  return [...c1, c2];
 }

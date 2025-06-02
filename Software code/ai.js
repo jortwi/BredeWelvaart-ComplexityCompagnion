@@ -1,13 +1,12 @@
 //AI Settings
 let model = "deepseek-r1-distill-llama-8b"; //DEEPSEEK R1
-
-//server defined in keys.js
-//api_token defined in key.js
+let aiMessageList = [];
 
 async function getAiMessage() {
-  let response;
-  if (aiMode === "conclusion") {
-  } else {
+  //in USER settings, a choice can be made between private and commercial AI
+  if (useLocalAI) {
+    let response;
+
     //add other modes
     //if no mode is provided, use mode === "undefined"
     response = await foundry.textToText({
@@ -18,9 +17,14 @@ async function getAiMessage() {
       model,
       maxTokens: 9999, //not ideal but neither is cut-off messages
     });
+
+    console.log(extractTextBetweenMarkers(response));
+    return extractTextBetweenMarkers(response)[0];
+  } else {
+    let response = await runGemini(getAiInput());
+    aiMessageList.push(response);
+    return response;
   }
-  console.log(extractTextBetweenMarkers(response));
-  return extractTextBetweenMarkers(response)[0];
 }
 
 function extractTextBetweenMarkers(input) {
@@ -67,10 +71,87 @@ const audioSwitch = {
 };
 
 function getAiInput() {
-  let input = {
+  let aiInputList = returnAiInputList();
+  // return JSON.stringify(input);
+  return `
+  PROMPT: ${aiInputList.prompt}
+  ---
+  SITUATION ANALYSIS: ${aiInputList.situationAnalysis}
+  ---
+  USER REFLECTION: ${aiInputList.usersReflection}
+  ---
+  TOPIC INFORMATION: ${aiInputList.topicInformation}
+  ---
+  BEHAVIOR: ${aiMode}
+  `;
+}
+
+function getElements() {
+  let elementNames = [];
+  for (let i = 0; i < elements.length; i++) {
+    elementNames.push(elements[i].name);
+  }
+  return elementNames;
+}
+
+async function getAiSessionSummary() {
+  let aiInputList = returnAiInputList();
+  let prompt = `
+    PROMPT: 
+    Write a short summary of the session. The session has been a discussion between a small group of people where they collaboratively visualized a complex topic.
+    You don't know exactly what happened, so only write things you are sure about. Consider your reader to be part of the group and thus already knowledgeable.
+    Take into account the topic information, reflections provided by the users, and the situation analysis provided by the users. 
+    In this discussion the users are visualizing how they think the elements in the situation relate to each other.
+    Do not give unnessecary information, introductions, suggestions, fun talk, or other unrelated text that an AI might give. You are only providing the summary,
+    so you will not respond to this prompt directly. You only return the summary I asked for.
+    Adress the users as "you" instead of "the group".
+    First remind them of the topic, then refer to the elements and relations they added. Finally tell them a bit about their reflections.
+    Round any numbers to one decimal
+    ---
+    Topic:
+    ${aiInputList.topicInformation}
+    ---
+    Situation Analysis:
+    ${aiInputList.situationAnalysisWithoutUncertaintyAndVitality}
+    ---
+    User Reflections:
+    ${aiInputList.usersReflection}
+  `;
+  if (useLocalAI) {
+    let response;
+
+    //add other modes
+    //if no mode is provided, use mode === "undefined"
+    response = await foundry.textToText({
+      server,
+      api_token,
+      prompt: prompt,
+      logging: true,
+      model,
+      maxTokens: 9999, //not ideal but neither is cut-off messages
+    });
+
+    console.log(extractTextBetweenMarkers(response));
+    return extractTextBetweenMarkers(response)[0];
+  } else {
+    let response = await runGemini(prompt);
+    aiMessageList.push(response);
+    return response;
+  }
+}
+
+function returnAiInputList() {
+  let includeRelations = "";
+  for (let i = 0; i < relations.length; i++) {
+    if (relations[i].type != "null") {
+      includeRelations += `There was a ${relations[i].type} relation between ${relations.e1.name} and ${relations.e2.name}. `;
+    }
+  }
+
+  return {
     prompt: `
-     GIVE A VERY SHORT SUPPORTIVE STATEMENT. MAX 2 SENTENCES!!!! THIS IS EXTREMELY IMPORTANT. 
-     CONSIDER YOUR READER TO BE INTELLIGENT AND KNOWLEDGEABLE.
+     GIVE A VERY SHORT SUPPORTIVE STATEMENT. MAX 1 SHORT SENTENCE!!!! THIS IS EXTREMELY IMPORTANT. DO NOT INTRODUCE THE TOPIC OR GIVE COMPLIMENTS. 
+     CONSIDER YOUR READER TO BE INTELLIGENT AND KNOWLEDGEABLE. IT IS A BIG PROBLEM IF YOUR RESPONSE IS TOO LONG. DO NOT USE LISTS, NO INTRODUCTION. NO ACKNOWLEDGEMENTS.
      You help the readers to collaborate and discuss a complex topic. Change your reaction according to the specified behavior.
      Take into account your own behavior, the topic information, the reflections provided by the users, and the situation analysis provided by the user.
      Help the users by provided missed opportunities or insights, by asking smart questions,
@@ -82,6 +163,7 @@ function getAiInput() {
     `,
     situationAnalysis: `
       Important elements though of by the users: ${getElements()}.
+      ${includeRelations}
       The users rate the uncertainty of their situation on a scale of 0 - 1 a: ${
         sensorData.knob_uncertainty
       }.
@@ -89,6 +171,10 @@ function getAiInput() {
         sensorData.knob_vitality
       }
     `,
+    situationAnalysisWithoutUncertaintyAndVitality: `
+     Important elements though of by the users: ${getElements()}.
+      ${includeRelations}
+      `,
     usersReflection: `
     The users rated their discussion and situational analysis on the following scales from 0 - 1:
     innovation: ${sensorData.reflecting_innovation},
@@ -101,23 +187,15 @@ function getAiInput() {
     listening to each other: ${sensorData.reflecting_listening},
     `,
     topicInformation: `
-      You currently do not have specific information about the topic, but you do have information that is relevant about broad prosperity:
+      Information that is relevant about broad prosperity:
       Broad Prosperity is used as a framework for reflecting on the situation. It includes everything that people value in life.
       Promote thinking in terms of broad prosperity, meaning thinking differently, regular reflection, learning, innovating, considering all perspectives,
       and especially considering effects elsewhere and effects in the future.
+
+      Topic information: ${backgroundInformation}
     `,
     behavior: `
       ${aiMode}
     `,
   };
-
-  return JSON.stringify(input);
-}
-
-function getElements() {
-  let elementNames = [];
-  for (let i = 0; i < elements.length; i++) {
-    elementNames.push(elements[i].name);
-  }
-  return elementNames;
 }

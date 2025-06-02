@@ -13,10 +13,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <!-- Marked -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF Space Mono Font -->
+    <script src="../assets/SpaceMono-Bold-normal.js"></script>
     <!-- OOCSI -->
     <script src="../assets/oocsi-web.min.js"></script>
     <!-- Main P5 Sketch -->
     <script src="sketch.js"></script>
+
+    <!-- User settings -->
+    <script src="../USER.js"></script>
 
     <!-- JS files -->
     <script src="Element.js"></script>
@@ -27,6 +34,30 @@
     <script src="../startElements.js"></script>
     <script src="handleRandomness.js"></script>
     <script src="progress.js"></script>
+
+
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        const genAI = new GoogleGenerativeAI(gemini_key);
+
+        async function runGemini(input) {
+            console.log("running Gemini AI based on prompt:", input)
+            const model = genAI.getGenerativeModel({ model: "models/gemini-2.5-flash-preview-05-20" });
+
+            const result = await model.generateContent(input);
+            const response = await result.response;
+            const text = response.text();
+
+            // document.getElementById("output").textContent = text;
+            // console.log(text)
+            console.log(text)
+            return text
+        }
+        window.runGemini = runGemini
+        // runGemini();
+    </script>
 </head>
 
 <body>

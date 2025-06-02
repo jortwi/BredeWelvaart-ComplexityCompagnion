@@ -1,12 +1,14 @@
 class Element {
   constructor({ x, y, r, increment, c1, c2, name, type }) {
+    let colorPair = getColorPair();
+    // console.log(colorPair);
     this.x = x;
     this.y = y;
     this.r = r;
     this.time = random(1000);
     this.increment = increment; //more will let the element to change more
-    this.c1 = c1; //inner color
-    this.c2 = c2; //outer color
+    this.c1 = color(colorPair[0]); //inner color
+    this.c2 = color(colorPair[1]); //outer color
     this.rings = 5; //ringNumber
     this.name = name;
     this.type = type ? type : "regular";

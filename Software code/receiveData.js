@@ -185,5 +185,5 @@ function updatePreviousButtonStates() {
   sensorData.prev_encoder_size = sensorData.encoder_size;
 
   //CC-04
-  sensorData.button_next = sensorData.prev_button_next;
+  sensorData.prev_button_next = sensorData.button_next;
 }

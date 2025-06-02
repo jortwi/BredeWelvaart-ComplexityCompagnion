@@ -27,7 +27,7 @@ function preload() {
 }
 
 function setup() {
-  let canvas = createCanvas(1440, 720); //not ideal
+  canvas = createCanvas(1440, 720); //not ideal
   canvas.parent("canvas");
 
   //set cursors start location
@@ -172,8 +172,26 @@ async function handleInputs() {
     let difference = sensorData.encoder_select - sensorData.prev_encoder_select;
     if (selectedAorB === "A") {
       selectedA += difference;
+
+      //check if two of the same elements are now selected after changing A
+      if (
+        ((selectedA % elements.length) + elements.length) % elements.length ==
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ) {
+        //add / remove 1 based on the direction that the knob was turned in (1/1 = +1, -1/1 = -1)
+        selectedA += difference / abs(difference);
+      }
     } else {
       selectedB += difference;
+
+      //check if two of the same elements are now selected after changing B
+      if (
+        ((selectedA % elements.length) + elements.length) % elements.length ==
+        ((selectedB % elements.length) + elements.length) % elements.length
+      ) {
+        //add / remove 1 based on the direction that the knob was turned in (1/1 = +1, -1/1 = -1)
+        selectedB += difference / abs(difference);
+      }
     }
   }
 
@@ -439,7 +457,7 @@ function getOocsiTypeString() {
       return "02_type_res";
     case "balancing":
       return "02_type_bal";
-    case "delay":
+    case "delaying":
       return "02_type_del";
     case "undefined":
       return "02_type_und";
@@ -542,4 +560,68 @@ function keyTyped() {
   if (userIsTyping && key !== "Enter") {
     typedText += key;
   }
+}
+
+//Exporting a result
+async function generatePDF() {
+  //check if the renderer existst
+  if (!canvas || !canvas.elt) {
+    console.error("p5.js canvas renderer or its element is not available!");
+    return;
+  }
+
+  //prepare document
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: "p",
+    unit: "mm",
+    format: "a4",
+  });
+
+  //convert image to base64
+  let imgData = canvas.elt.toDataURL("image/png");
+
+  //prepare image
+  const imgProps = doc.getImageProperties(imgData);
+  const pdfWidth = doc.internal.pageSize.getWidth();
+  const pdfHeight = doc.internal.pageSize.getHeight();
+  const margin = 10;
+
+  let imgWidth = pdfWidth - 2 * margin;
+  let imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+  let imgX = margin;
+  let imgY = margin;
+
+  if (imgY + imgHeight > pdfHeight - margin) {
+    imgHeight = pdfHeight - 2 * margin;
+    imgWidth = (imgProps.width * imgHeight) / imgProps.height;
+    imgX = (pdfWidth - imgWidth) / 2;
+  }
+
+  //add image
+  doc.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
+
+  //add text
+  let currentY = imgY + imgHeight + 40;
+  doc.setFont("SpaceMono-Bold", "normal");
+  doc.setFontSize(24);
+  doc.text("Comlexity Companion Session Report", margin, currentY);
+  currentY += 10;
+
+  doc.setFontSize(12);
+
+  const description = await getAiSessionSummary();
+
+  if (description) {
+    doc.text("Short summary::", margin, currentY);
+    currentY += 7;
+    const splitDescription = doc.splitTextToSize(
+      description,
+      pdfWidth - 2 * margin
+    );
+    doc.text(splitDescription, margin, currentY);
+    currentY += splitDescription.length * 5 + 5;
+  }
+
+  doc.save("visualization_report.pdf");
 }
