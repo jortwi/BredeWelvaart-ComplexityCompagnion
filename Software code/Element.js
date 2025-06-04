@@ -15,6 +15,7 @@ class Element {
     this.lastClosestElement = "this is only used for white spots";
     this.xSpeed = 0;
     this.ySpeed = 0;
+    this.drawBorder = false;
   }
 
   display() {
@@ -34,8 +35,27 @@ class Element {
       });
     }
 
+    textAlign(CENTER, CENTER);
+    textSize(this.r / 3);
+    let txt = this.name;
+
+    // Get the text width and height
+    let txtWidth = textWidth(txt);
+    let txtHeight = textAscent() + textDescent();
+
+    // Draw semitransparent rounded rectangle behind text
+    fill(255, 100); // RGBA - black with alpha for transparency
+    if (this.drawBorder) {
+      stroke(this.drawBorder);
+      strokeWeight(3);
+    } else {
+      noStroke();
+    }
+    rectMode(CENTER);
+    rect(this.x, this.y, txtWidth + 20, txtHeight + 10, 10); // rounded corners
+
     fill("black");
-    text(this.name, this.x, this.y + this.r * 2 + 20);
+    text(this.name, this.x, this.y - 2); //the minus two sets the text more to the middle of the box
   }
 
   update() {

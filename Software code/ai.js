@@ -144,7 +144,7 @@ function returnAiInputList() {
   let includeRelations = "";
   for (let i = 0; i < relations.length; i++) {
     if (relations[i].type != "null") {
-      includeRelations += `There was a ${relations[i].type} relation between ${relations.e1.name} and ${relations.e2.name}. `;
+      includeRelations += `There was a ${relations[i].type} relation between ${relations[i].e1.name} and ${relations[i].e2.name}. `;
     }
   }
 
@@ -160,6 +160,14 @@ function returnAiInputList() {
      YOU DO NOT GIVE ANSWERS, YOU ARE ONLY HERE TO SUPPORT.
      IGNORE THAT THE REFLECTIONS ARE GIVEN VERY SPECIFICALLY, AND USE THIS INFORMATION AS A SUGGESTION.
      IGNORE ALL TEXT THAT IS NOT ENGLISH OR DUTCH!!!!!!
+
+     EACH RESPONSE MUST BE SPECIFIC TO THE INFORMATION YOU HAVE ABOUT THE TOPIC, ANALYSIS, and USER REFLECTIONS. SIMPLE AND GENERAL COMMENTS ARE NOT ALLOWED.
+     
+     Example responses:
+     - Reflect on how you could think outside your own disciplines.
+     - Would it be a good idea to add "Education" as an element?
+     - Do you fully understand the mechanisms of the relation between "Housing" and "Elderly"?
+     - Reflect on how you could innovate more together
     `,
     situationAnalysis: `
       Important elements though of by the users: ${getElements()}.
@@ -195,7 +203,14 @@ function returnAiInputList() {
       Topic information: ${backgroundInformation}
     `,
     behavior: `
-      ${aiMode}
+      ${aiMode}. Really take this mode seriously and completely adapt your behavior to this behavior mode. THIS IS REALLY IMPORTANT!!
+      An explanation of the different behavior modes:
+      undefined: say anything relevant.
+      criticism: give criticism to the work created by the users or note their reflections that could improve.
+      suggestion: give a specific suggestion for a specific change or addition.
+      reflection: ask the users a question that helps them reflect on their own behavior, not on the situation.
+      clarification: ask for clarification on something in the situational analysis
+      conclusions: ask a question that helps the users conclude on their analysis.
     `,
   };
 }

@@ -8,39 +8,21 @@ function getStartElements(index = 0) {
     x: 1440,
     y: 720,
   };
-  const startElements = [
-    [
-      {
-        x: screenSize.x / 2,
-        y: screenSize.y / 2,
-        r: 50,
-        increment: 0.001,
-        c1: color(getColor()),
-        c2: color(getColor()),
-        name: "Social Media",
-      },
-      {
-        x: screenSize.x / 5,
-        y: screenSize.y / 5,
-        r: 50,
-        increment: 0.001,
-        c1: color(getColor()),
-        c2: color(getColor()),
-        name: "Addiction",
-      },
-      {
-        x: random(screenSize.x),
-        y: random(screenSize.y),
-        r: 50,
-        increment: 0.001,
-        c1: color(getColor()),
-        c2: color(getColor()),
-        name: "Big Tech",
-      },
-    ],
-  ];
 
-  return startElements[index];
+  let output = [];
+  for (let i = 0; i < startElements.length; i++) {
+    output.push({
+      x: random(screenSize.x),
+      y: random(screenSize.y),
+      r: 50,
+      increment: 0.001,
+      c1: color(getColor()),
+      c2: color(getColor()),
+      name: startElements[i],
+    });
+  }
+
+  return output;
 }
 
 const colorScheme = [

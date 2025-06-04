@@ -65,6 +65,39 @@ function draw() {
 
   //display elements
   for (let i = 0; i < elements.length; i++) {
+    //if the selected relation was selected as primary selection, draw a black border, if it is a secondary selection, draw a grey border
+    // if (selectedAorB === "A") {
+    //   if (
+    //     (i =
+    //       ((selectedA % elements.length) + elements.length) % elements.length)
+    //   ) {
+    //     elements[i].drawBorder = color("black");
+    //   } else if (
+    //     (i =
+    //       ((selectedB % elements.length) + elements.length) % elements.length)
+    //   ) {
+    //     elements[i].drawBorder = color("grey");
+    //   } else {
+    //     elements[i].drawBorder = false;
+    //   }
+    // } else {
+    //   if (
+    //     (i =
+    //       ((selectedB % elements.length) + elements.length) % elements.length)
+    //   ) {
+    //     elements[i].drawBorder = color("black");
+    //   } else if (
+    //     (i =
+    //       ((selectedA % elements.length) + elements.length) % elements.length)
+    //   ) {
+    //     elements[i].drawBorder = color("grey");
+    //   } else {
+    //     elements[i].drawBorder = false;
+    //   }
+    // }
+
+    //Dit laat de boel crashen maar is denk ik wel beina goed
+
     elements[i].display();
     elements[i].update();
   }
@@ -81,7 +114,8 @@ function draw() {
 
   sendOOCSI();
 
-  drawProgressBar();
+  // drawProgressBar();
+  drawReflectionShowcase();
 
   // sensorData.encoder_select;
 
@@ -98,6 +132,11 @@ function windowResized() {
 function sendOOCSI() {
   //CC-01
   let sendRecording = audioSwitch.recording ? "true" : "false";
+
+  if (sendRecording === "false" && userIsTyping) {
+    sendRecording = "true";
+  }
+
   OOCSI.send("CC-01", {
     "01_oled_a":
       elements[
@@ -273,14 +312,18 @@ async function handleInputs() {
     let difference =
       sensorData.prev_encoder_negative_positive -
       sensorData.encoder_negative_positive;
-    selectedRelation.positivity -= difference;
+    if (selectedRelation) {
+      selectedRelation.positivity -= difference;
+    }
   }
 
   //update strength of relation
   if (sensorData.encoder_weak_strong !== sensorData.prev_encoder_weak_strong) {
     let difference =
       sensorData.prev_encoder_weak_strong - sensorData.encoder_weak_strong;
-    selectedRelation.strength -= difference;
+    if (selectedRelation) {
+      selectedRelation.strength -= difference;
+    }
   }
 
   // --- CC-03 --- //

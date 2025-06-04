@@ -56,3 +56,59 @@ function drawProgressBar() {
 
   pop();
 }
+
+function drawReflectionShowcase() {
+  push();
+
+  let startPoint = (1.5 * width) / 10;
+  let reflectionKnobs = [
+    "innovation",
+    "interdisciplinary thinking",
+    "futures",
+
+    "effects elsewhere",
+    "quality of society",
+    "quality of life",
+    "collaboration",
+    "listening",
+  ];
+
+  let progress = [
+    sensorData.reflecting_innovation,
+    sensorData.reflecting_interdisciplinary_thinking,
+    sensorData.reflecting_futures,
+    sensorData.reflecting_effects_elsewhere,
+    sensorData.reflecting_quality_of_society,
+    sensorData.reflecting_quality_of_life,
+    sensorData.reflecting_collaboration,
+    sensorData.reflecting_listening,
+  ];
+
+  for (let i = 0; i < 8; i++) {
+    textAlign(CENTER, CENTER);
+    rectMode(CENTER);
+    textSize(17);
+    text(
+      reflectionKnobs[i],
+      startPoint + (width / 10) * i,
+      height - height / 13 - 110,
+      50,
+      70
+    );
+    //     "#FF0000", //red
+    // "#C300FF", //purple
+    // "#1100FF", //blue
+    let c = lerpColor(color("#FF0000"), color("#1100FF"), progress[i]);
+
+    fill(c);
+    noStroke();
+    circle(
+      startPoint + (width / 10) * i,
+      height - height / 13,
+      progress[i] * 100 + 5
+    );
+    fill("#282828");
+  }
+
+  pop();
+}
