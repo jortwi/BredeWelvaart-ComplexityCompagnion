@@ -4,7 +4,7 @@ Visualizing Complex Issues With Broad Prosperity!
 
 # How to use
 
-The software presented here is to be used with four different hardware modules that run on ESP32 S2 Mini. Its purpose is to visualize complex situations in group settings where the multiple modules are split across users. The organizer of such a session introduces the topic to be discussed and provides an explanation for how to use the hardware. Settings are easily accessible through the USER.js file. Here, background information can be provided (which will be used by the AI system), as well as starting elements to get the discussion going.
+The software presented here is to be used with four different hardware modules that run on ESP32 S2 Mini. Its purpose is to visualize complex situations in group settings where the multiple modules are split across users. The organizer of such a session introduces the topic to be discussed and provides an explanation for how to use the hardware. Settings are easily accessible through the USER.js file. Here, background information can be provided (which will be used by the AI system), as well as starting elements to get the discussion going. Finally, it is possible to switch between using local AI to using google gemini. In both cases, an api key needs to be provided, for which a keys.js file needs to be created. 
 
 # Acknowledgements
 
